@@ -285,7 +285,8 @@
     if (this.settings.allowedTypes.indexOf('*') === 0){
       return true;
     } else {
-      return this.settings.allowedTypes.indexOf(file.type) >= 0;
+      var fileType = /\.jfif$/i.test(file.name || '') ? 'image/jpeg' : file.type;
+      return this.settings.allowedTypes.indexOf(fileType) >= 0;
     }
   };
 
