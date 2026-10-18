@@ -15,6 +15,7 @@ backups/
 *.pid
 *.log
 *.sqlite
+AGENTS.md
 
 # ignore config files
 config.json
@@ -30,3 +31,6 @@ public/uploads/*
 /coverage/
 
 .vscode/settings.json
+
+# ignore local image upload tests
+/test/imageRouter/
