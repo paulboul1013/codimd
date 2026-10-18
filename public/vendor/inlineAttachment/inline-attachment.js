@@ -286,6 +286,7 @@
       return true;
     } else {
       var fileType = /\.jfif$/i.test(file.name || '') ? 'image/jpeg' : file.type;
+      if (/\.svg$/i.test(file.name || '')) fileType = 'image/svg+xml';
       return this.settings.allowedTypes.indexOf(fileType) >= 0;
     }
   };
