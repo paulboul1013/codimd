@@ -115,7 +115,21 @@
                     <a href="#" class="btn btn-default ui-clear-history" title="<%= __('Clear history') %>" data-toggle="modal" data-target=".delete-history-modal"><i class="fa fa-trash-o"></i></a>
                     </span>
                     <a href="#" class="btn btn-default ui-refresh-history" title="<%= __('Refresh history') %>"><i class="fa fa-refresh"></i></a>
+                    <% if (signin || allowAnonymous) { %>
+                    <button type="button" class="btn btn-default ui-import-markdown"><i class="fa fa-file-text-o" aria-hidden="true"></i> <%= __('Import Markdown') %></button>
+                    <input type="file" class="ui-markdown-file hidden" accept=".md,.markdown,.txt" aria-label="<%= __('Import Markdown') %>" hidden>
+                    <% } %>
                 </form>
+                <% if (signin || allowAnonymous) { %>
+                <p class="alert alert-danger ui-markdown-import-error" role="alert" hidden
+                    data-extension="<%= __('Choose a .md, .markdown, or .txt file.') %>"
+                    data-empty="<%= __('The file has no content.') %>"
+                    data-read="<%= __('Unable to read the file. Please choose it again.') %>"
+                    data-too-large="<%= __('The file is too large to import.') %>"
+                    data-login="<%= __('Please sign in before importing Markdown.') %>"
+                    data-failed="<%= __('Unable to import Markdown. Please try again.') %>"
+                    data-network="<%= __('The connection failed. The note may already have been created. Check your history before trying again.') %>"></p>
+                <% } %>
                 <h4 class="ui-nohistory" style="display:none;">
                     <%= __('No history') %>
                 </h4>

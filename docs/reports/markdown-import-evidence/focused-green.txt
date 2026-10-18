@@ -1,0 +1,50 @@
+2026-10-18T04:14:59.749Z warn: 	Neither 'domain' nor 'CMD_DOMAIN' is configured. This can cause issues with various components.
+Hint: Make sure 'protocolUseSSL' and 'urlAddPort' or 'CMD_PROTOCOL_USESSL' and 'CMD_URL_ADDPORT' are configured properly.
+2026-10-18T04:14:59.750Z warn: 	Session secret not set. Using random generated one. Please set `sessionSecret` in your config.js file. All users will be logged out.
+
+
+  response#newNote
+    ✓ sets the initial title to 中文標題 from the normalized body
+    ✓ sets the initial title to H1 標題 from the normalized body
+    ✓ sets the initial title to Untitled from the normalized body
+    ✓ sets the initial title to Untitled from the normalized body
+    ✓ leaves template and title selection to the model for undefined
+    ✓ leaves template and title selection to the model for ""
+    ✓ leaves template and title selection to the model for "\r\r"
+    ✓ allows guests without adding an owner or server history
+    ✓ rejects unauthenticated creation when anonymous creation is disabled
+    ✓ rejects oversized bodies before creating a note
+    ✓ renders a server error without retrying failed creation
+
+  history Markdown import
+    ✓ opens the file chooser from the labelled button
+    ✓ ignores a cancelled selection
+    ✓ posts UTF-8 content unchanged and navigates for article.MD
+    ✓ posts UTF-8 content unchanged and navigates for article.Markdown
+    ✓ posts UTF-8 content unchanged and navigates for article.TXT
+    ✓ rejects empty normalized content "" without a request
+    ✓ rejects empty normalized content "\r\r" without a request
+    ✓ preserves nonempty whitespace "   "
+    ✓ preserves nonempty whitespace "\n"
+    ✓ rejects unsupported extensions regardless of MIME type
+    ✓ recovers from FileReader onerror
+    ✓ recovers from FileReader onabort
+    ✓ recovers if reading throws synchronously
+    ✓ shows an error for HTTP 413 and permits selecting the same file
+    ✓ shows an error for HTTP 500 and permits selecting the same file
+    ✓ shows an error for HTTP 403 and permits selecting the same file
+    ✓ rejects an unexpected final URL: https://example.test/team?next=%2Fnew
+    ✓ rejects an unexpected final URL: https://example.test/team/?next=%2Fnew
+    ✓ rejects an unexpected final URL: https://evil.test/team/AAAAAAAAAAAAAAAAAAAAAA
+    ✓ rejects an unexpected final URL: https://example.test/AAAAAAAAAAAAAAAAAAAAAA
+    ✓ rejects an unexpected final URL: https://example.test/team/500
+    ✓ rejects an unexpected final URL: https://example.test/team/AAAAAAAAAAAAAAAAAAAAAA/extra
+    ✓ rejects an unexpected final URL: https://example.test/team/AAAAAAAAAAAAAAAAAAAAAA?next=bad
+    ✓ recognizes the login redirect returned by the backend on a subpath
+    ✓ rejects a successful response without a redirect
+    ✓ shows network uncertainty without retrying
+    ✓ ignores another selection while a request is pending
+    ✓ supports a relative server URL at the site root
+
+
+  39 passing (434ms)

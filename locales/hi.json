@@ -100,5 +100,13 @@
 	"Select From Available Snippets": "उपलब्ध स्निपेट से चयन करें",
 	"OR": "या",
 	"Export to Snippet": "स्निपेट में निर्यात",
-	"Select Visibility Level": "दृश्यता के स्तर का चयन"
+	"Select Visibility Level": "दृश्यता के स्तर का चयन",
+	"Import Markdown": "Import Markdown",
+	"Choose a .md, .markdown, or .txt file.": "Choose a .md, .markdown, or .txt file.",
+	"The file has no content.": "The file has no content.",
+	"Unable to read the file. Please choose it again.": "Unable to read the file. Please choose it again.",
+	"The file is too large to import.": "The file is too large to import.",
+	"Please sign in before importing Markdown.": "Please sign in before importing Markdown.",
+	"Unable to import Markdown. Please try again.": "Unable to import Markdown. Please try again.",
+	"The connection failed. The note may already have been created. Check your history before trying again.": "The connection failed. The note may already have been created. Check your history before trying again."
 }

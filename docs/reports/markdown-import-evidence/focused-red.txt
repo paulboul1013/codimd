@@ -1,0 +1,145 @@
+2026-10-18T04:03:07.907Z warn: 	Neither 'domain' nor 'CMD_DOMAIN' is configured. This can cause issues with various components.
+Hint: Make sure 'protocolUseSSL' and 'urlAddPort' or 'CMD_PROTOCOL_USESSL' and 'CMD_URL_ADDPORT' are configured properly.
+2026-10-18T04:03:07.908Z warn: 	Session secret not set. Using random generated one. Please set `sessionSecret` in your config.js file. All users will be logged out.
+
+
+  response#newNote
+    1) sets the initial title to 中文標題 from the normalized body
+    2) sets the initial title to H1 標題 from the normalized body
+    3) sets the initial title to Untitled from the normalized body
+    4) sets the initial title to Untitled from the normalized body
+    ✓ leaves template and title selection to the model for undefined
+    ✓ leaves template and title selection to the model for ""
+    ✓ leaves template and title selection to the model for "\r\r"
+    ✓ allows guests without adding an owner or server history
+    ✓ rejects unauthenticated creation when anonymous creation is disabled
+    ✓ rejects oversized bodies before creating a note
+    ✓ renders a server error without retrying failed creation
+
+
+  7 passing (257ms)
+  4 failing
+
+  1) response#newNote
+       sets the initial title to 中文標題 from the normalized body:
+
+      AssertionError [ERR_ASSERTION] [ERR_ASSERTION]:   # test/response/newNote.test.js:59
+
+  assert.deepStrictEqual(models.Note.create.firstCall.args[0], {ownerId: 'owner',alias: null,content: body.replace(/\r/g, ''),title})
+                         |      |    |      |         |   |    |                                      |    |
+                         |      |    |      |         |   |    |                                      |    "---\ntitle: 中文標題\ntags: [測試]\n---\n# H1\n內文"
+                         |      |    |      |         |   |    |                                      "---\r\ntitle: 中文標題\r\ntags: [測試]\r\n---\r\n# H1\r\n內文"
+                         |      |    |      |         |   |    Object{ownerId:"owner",alias:null,content:"---\ntitle: 中文標題\ntags: [測試]\n---\n# H1\n內文",title:"中文標題"}
+                         |      |    |      |         |   Object{ownerId:"owner",alias:null,content:"---\ntitle: 中文標題\ntags: [測試]\n---\n# H1\n內文"}
+                         |      |    |      |         [#Object#]
+                         |      |    |      Object{proxy:#function#,thisValue:#Object#,args:#Array#,lastArg:#Object#,callback:undefined,returnValue:#Promise#,exception:undefined,callId:0,errorWithCallStack:#Error#}
+                         |      |    #function#
+                         |      Object{create:#function#,parseNoteTitle:#function#,encodeNoteId:#function#}
+                         Object{Note:#Object#}
+
+      + expected - actual
+
+       {
+         "alias": [null]
+         "content": "---\ntitle: 中文標題\ntags: [測試]\n---\n# H1\n內文"
+         "ownerId": "owner"
+      +  "title": "中文標題"
+       }
+
+      at Decorator._callFunc (node_modules/empower-core/lib/decorator.js:114:29)
+      at Decorator.concreteAssert (node_modules/empower-core/lib/decorator.js:103:17)
+      at Function.decoratedAssert (node_modules/empower-core/lib/decorate.js:49:30)
+      at Context.<anonymous> (test/response/newNote.test.js:59:14)
+
+  2) response#newNote
+       sets the initial title to H1 標題 from the normalized body:
+
+      AssertionError [ERR_ASSERTION] [ERR_ASSERTION]:   # test/response/newNote.test.js:59
+
+  assert.deepStrictEqual(models.Note.create.firstCall.args[0], {ownerId: 'owner',alias: null,content: body.replace(/\r/g, ''),title})
+                         |      |    |      |         |   |    |                                      |    |
+                         |      |    |      |         |   |    |                                      |    "# H1 標題\n正文"
+                         |      |    |      |         |   |    |                                      "# H1 標題\n正文"
+                         |      |    |      |         |   |    Object{ownerId:"owner",alias:null,content:"# H1 標題\n正文",title:"H1 標題"}
+                         |      |    |      |         |   Object{ownerId:"owner",alias:null,content:"# H1 標題\n正文"}
+                         |      |    |      |         [#Object#]
+                         |      |    |      Object{proxy:#function#,thisValue:#Object#,args:#Array#,lastArg:#Object#,callback:undefined,returnValue:#Promise#,exception:undefined,callId:3,errorWithCallStack:#Error#}
+                         |      |    #function#
+                         |      Object{create:#function#,parseNoteTitle:#function#,encodeNoteId:#function#}
+                         Object{Note:#Object#}
+
+      + expected - actual
+
+       {
+         "alias": [null]
+         "content": "# H1 標題\n正文"
+         "ownerId": "owner"
+      +  "title": "H1 標題"
+       }
+
+      at Decorator._callFunc (node_modules/empower-core/lib/decorator.js:114:29)
+      at Decorator.concreteAssert (node_modules/empower-core/lib/decorator.js:103:17)
+      at Function.decoratedAssert (node_modules/empower-core/lib/decorate.js:49:30)
+      at Context.<anonymous> (test/response/newNote.test.js:59:14)
+
+  3) response#newNote
+       sets the initial title to Untitled from the normalized body:
+
+      AssertionError [ERR_ASSERTION] [ERR_ASSERTION]:   # test/response/newNote.test.js:59
+
+  assert.deepStrictEqual(models.Note.create.firstCall.args[0], {ownerId: 'owner',alias: null,content: body.replace(/\r/g, ''),title})
+                         |      |    |      |         |   |    |                                      |    |
+                         |      |    |      |         |   |    |                                      |    "正文，沒有標題"
+                         |      |    |      |         |   |    |                                      "正文，沒有標題"
+                         |      |    |      |         |   |    Object{ownerId:"owner",alias:null,content:"正文，沒有標題",title:"Untitled"}
+                         |      |    |      |         |   Object{ownerId:"owner",alias:null,content:"正文，沒有標題"}
+                         |      |    |      |         [#Object#]
+                         |      |    |      Object{proxy:#function#,thisValue:#Object#,args:#Array#,lastArg:#Object#,callback:undefined,returnValue:#Promise#,exception:undefined,callId:6,errorWithCallStack:#Error#}
+                         |      |    #function#
+                         |      Object{create:#function#,parseNoteTitle:#function#,encodeNoteId:#function#}
+                         Object{Note:#Object#}
+
+      + expected - actual
+
+       {
+         "alias": [null]
+         "content": "正文，沒有標題"
+         "ownerId": "owner"
+      +  "title": "Untitled"
+       }
+
+      at Decorator._callFunc (node_modules/empower-core/lib/decorator.js:114:29)
+      at Decorator.concreteAssert (node_modules/empower-core/lib/decorator.js:103:17)
+      at Function.decoratedAssert (node_modules/empower-core/lib/decorate.js:49:30)
+      at Context.<anonymous> (test/response/newNote.test.js:59:14)
+
+  4) response#newNote
+       sets the initial title to Untitled from the normalized body:
+
+      AssertionError [ERR_ASSERTION] [ERR_ASSERTION]:   # test/response/newNote.test.js:59
+
+  assert.deepStrictEqual(models.Note.create.firstCall.args[0], {ownerId: 'owner',alias: null,content: body.replace(/\r/g, ''),title})
+                         |      |    |      |         |   |    |                                      |    |
+                         |      |    |      |         |   |    |                                      |    " \n"
+                         |      |    |      |         |   |    |                                      " \n"
+                         |      |    |      |         |   |    Object{ownerId:"owner",alias:null,content:" \n",title:"Untitled"}
+                         |      |    |      |         |   Object{ownerId:"owner",alias:null,content:" \n"}
+                         |      |    |      |         [#Object#]
+                         |      |    |      Object{proxy:#function#,thisValue:#Object#,args:#Array#,lastArg:#Object#,callback:undefined,returnValue:#Promise#,exception:undefined,callId:9,errorWithCallStack:#Error#}
+                         |      |    #function#
+                         |      Object{create:#function#,parseNoteTitle:#function#,encodeNoteId:#function#}
+                         Object{Note:#Object#}
+
+      + expected - actual
+
+       {
+         "alias": [null]
+         "content": " \n"
+         "ownerId": "owner"
+      +  "title": "Untitled"
+       }
+
+      at Decorator._callFunc (node_modules/empower-core/lib/decorator.js:114:29)
+      at Decorator.concreteAssert (node_modules/empower-core/lib/decorator.js:103:17)
+      at Function.decoratedAssert (node_modules/empower-core/lib/decorate.js:49:30)
+      at Context.<anonymous> (test/response/newNote.test.js:59:14)

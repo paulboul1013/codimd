@@ -1,0 +1,103 @@
+- generic [active] [ref=f13e1]:
+  - generic [ref=f13e4]:
+    - generic [ref=f13e6]:
+      - heading [level=3]
+      - navigation [ref=f13e7]:
+        - list [ref=f13e8]:
+          - listitem [ref=f13e9]:
+            - link "簡介" [ref=f13e10] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f13e11]:
+            - link "歷史記錄" [ref=f13e12] [cursor=pointer]:
+              - /url: "#"
+          - text: 
+          - generic [ref=f13e13]:
+            - link " 建立筆記" [ref=f13e14] [cursor=pointer]:
+              - /url: http://127.0.0.1:3219/team/new
+              - generic [ref=f13e15]: 
+              - text: 建立筆記
+            - generic [ref=f13e16]:
+              - button "markdown-import-1792296988377 " [ref=f13e17] [cursor=pointer]:
+                - generic [ref=f13e19]: markdown-import-1792296988377
+                - generic [ref=f13e20]: 
+              - text:    
+    - text:    
+    - generic [ref=f13e21]:
+      - generic [ref=f13e22]:
+        - list [ref=f13e25]:
+          - listitem [ref=f13e26]:
+            - textbox [ref=f13e28]: 選擇標籤…
+        - textbox "搜尋關鍵字…" [ref=f13e30]
+        - link "標題" [ref=f13e31] [cursor=pointer]:
+          - /url: "#"
+        - link "時間" [ref=f13e32] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=f13e33]:
+          - link "" [ref=f13e34] [cursor=pointer]:
+            - /url: "#"
+          - generic "匯入記錄" [ref=f13e36] [cursor=pointer]:
+            - generic [ref=f13e37]: 
+            - button "Choose File" [ref=f13e38]
+          - link "" [ref=f13e39] [cursor=pointer]:
+            - /url: "#"
+        - link "" [ref=f13e41] [cursor=pointer]:
+          - /url: "#"
+        - button "匯入 Markdown" [ref=f13e43] [cursor=pointer]:
+          - generic [aria-hidden] [ref=f13e44]: 
+          - text: 匯入 Markdown
+      - list
+      - list
+    - generic [ref=f13e46]:
+      - combobox [ref=f13e47]:
+        - option "English"
+        - option "简体中文"
+        - option "繁體中文" [selected]
+        - option "Français"
+        - option "Deutsch"
+        - option "日本語"
+        - option "Español"
+        - option "Català"
+        - option "Ελληνικά"
+        - option "Português"
+        - option "italiano"
+        - option "Türkçe"
+        - option "Русский"
+        - option "Nederlands"
+        - option "hrvatski jezik"
+        - option "język polski"
+        - option "Українська"
+        - option "हिन्दी"
+        - option "svenska"
+        - option "Esperanto"
+        - option "dansk"
+        - option "한국어"
+        - option "Bahasa Indonesia"
+        - option "српски"
+      - paragraph [ref=f13e48]:
+        - text: 技術支援：
+        - link "CodiMD" [ref=f13e49] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/codimd
+        - text: "|"
+        - link "版本" [ref=f13e50] [cursor=pointer]:
+          - /url: http://127.0.0.1:3219/team/s/release-notes
+        - text: "|"
+        - link "原始碼" [ref=f13e51] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/codimd/tree/772bf316f2ad49d98c5fa1a60d7569f079daa81c
+      - heading [level=6] [ref=f13e52]:
+        - text: 來
+        - link " GitHub" [ref=f13e53] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/CodiMD
+          - generic [ref=f13e54]: 
+          - text: GitHub
+        - text: ","
+        - link " Gitter" [ref=f13e55] [cursor=pointer]:
+          - /url: https://gitter.im/hackmdio/hackmd
+          - generic [ref=f13e56]: 
+          - text: Gitter
+        - text: 或
+        - link " POEditor" [ref=f13e57] [cursor=pointer]:
+          - /url: https://poeditor.com/join/project/q0nuPWyztp
+          - generic [ref=f13e58]: 
+          - text: POEditor
+        - text: 和我們互動吧！
+  - status [ref=f13e59]

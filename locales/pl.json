@@ -111,5 +111,13 @@
     "Do you really want to delete your user account?": "Do you really want to delete your user account?",
     "This will delete your account, all notes that are owned by you and remove all references to your account from other notes.": "This will delete your account, all notes that are owned by you and remove all references to your account from other notes.",
     "Delete user": "Delete user",
-    "Export user data": "Export user data"
+    "Export user data": "Export user data",
+	"Import Markdown": "Import Markdown",
+	"Choose a .md, .markdown, or .txt file.": "Choose a .md, .markdown, or .txt file.",
+	"The file has no content.": "The file has no content.",
+	"Unable to read the file. Please choose it again.": "Unable to read the file. Please choose it again.",
+	"The file is too large to import.": "The file is too large to import.",
+	"Please sign in before importing Markdown.": "Please sign in before importing Markdown.",
+	"Unable to import Markdown. Please try again.": "Unable to import Markdown. Please try again.",
+	"The connection failed. The note may already have been created. Check your history before trying again.": "The connection failed. The note may already have been created. Check your history before trying again."
 }

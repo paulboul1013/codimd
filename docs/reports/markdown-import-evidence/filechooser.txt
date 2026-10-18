@@ -1,0 +1,8 @@
+### Ran Playwright code
+```js
+await (async page => { const [chooser] = await Promise.all([page.waitForEvent("filechooser"), page.locator(".ui-import-markdown").click()]); await chooser.setFiles([]); return { labelledButtonOpenedNativeChooser: true, inputHidden: !await page.locator(".ui-markdown-file").isVisible() }; })(page);
+```
+### Page
+- Page URL: http://127.0.0.1:3219/team
+### Modal state
+- [File chooser]: can be handled by upload

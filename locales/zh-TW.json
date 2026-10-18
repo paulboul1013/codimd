@@ -138,5 +138,13 @@
     "Expand all": "全部展開",
     "Collapse all": "全部折疊",
     "Back to top": "回到頂端",
-    "Go to bottom": "前往底端"
+    "Go to bottom": "前往底端",
+	"Import Markdown": "匯入 Markdown",
+	"Choose a .md, .markdown, or .txt file.": "請選擇 .md、.markdown 或 .txt 檔案。",
+	"The file has no content.": "檔案沒有內容。",
+	"Unable to read the file. Please choose it again.": "無法讀取檔案，請重新選取。",
+	"The file is too large to import.": "檔案過大，無法匯入。",
+	"Please sign in before importing Markdown.": "請先登入，再匯入 Markdown。",
+	"Unable to import Markdown. Please try again.": "無法匯入 Markdown，請再試一次。",
+	"The connection failed. The note may already have been created. Check your history before trying again.": "連線失敗，筆記可能已建立。請先查看歷史記錄，再決定是否重試。"
 }

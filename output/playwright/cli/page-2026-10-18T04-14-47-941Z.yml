@@ -1,0 +1,96 @@
+- generic [active] [ref=f7e1]:
+  - generic [ref=f7e4]:
+    - generic [ref=f7e6]:
+      - heading [level=3]
+      - navigation [ref=f7e7]:
+        - list [ref=f7e8]:
+          - listitem [ref=f7e9]:
+            - link "簡介" [ref=f7e10] [cursor=pointer]:
+              - /url: "#"
+          - listitem [ref=f7e11]:
+            - link "歷史記錄" [ref=f7e12] [cursor=pointer]:
+              - /url: "#"
+          - generic [ref=f7e13]:
+            - link " 建立訪客筆記" [ref=f7e14] [cursor=pointer]:
+              - /url: http://127.0.0.1:3219/team/new
+              - generic [ref=f7e15]: 
+              - text: 建立訪客筆記
+            - button "登入" [ref=f7e16] [cursor=pointer]
+          - text:      
+    - generic [ref=f7e18]:
+      - heading " CodiMD" [level=1] [ref=f7e19]:
+        - generic [ref=f7e20]: 
+        - text: CodiMD
+      - paragraph [ref=f7e21]: 使用 Markdown 寫作與分享知識的最佳方式
+      - generic [ref=f7e22]: 登入
+      - text: 或
+      - link "探索所有功能" [ref=f7e25] [cursor=pointer]:
+        - /url: http://127.0.0.1:3219/team/features
+      - generic [ref=f7e27]:
+        - link " 使用網址協作" [ref=f7e29] [cursor=pointer]:
+          - /url: http://127.0.0.1:3219/team/features#Share-Notes
+          - generic [ref=f7e30]: 
+          - heading "使用網址協作" [level=4] [ref=f7e31]
+        - link " 支援圖表與 MathJax" [ref=f7e33] [cursor=pointer]:
+          - /url: http://127.0.0.1:3219/team/features#MathJax
+          - generic [ref=f7e34]: 
+          - heading "支援圖表與 MathJax" [level=4] [ref=f7e35]
+        - link " 支援簡報模式" [ref=f7e37] [cursor=pointer]:
+          - /url: http://127.0.0.1:3219/team/features#Slide-Mode
+          - generic [ref=f7e38]: 
+          - heading "支援簡報模式" [level=4] [ref=f7e39]
+    - text:        
+    - generic [ref=f7e41]:
+      - combobox [ref=f7e42]:
+        - option "English"
+        - option "简体中文"
+        - option "繁體中文" [selected]
+        - option "Français"
+        - option "Deutsch"
+        - option "日本語"
+        - option "Español"
+        - option "Català"
+        - option "Ελληνικά"
+        - option "Português"
+        - option "italiano"
+        - option "Türkçe"
+        - option "Русский"
+        - option "Nederlands"
+        - option "hrvatski jezik"
+        - option "język polski"
+        - option "Українська"
+        - option "हिन्दी"
+        - option "svenska"
+        - option "Esperanto"
+        - option "dansk"
+        - option "한국어"
+        - option "Bahasa Indonesia"
+        - option "српски"
+      - paragraph [ref=f7e43]:
+        - text: 技術支援：
+        - link "CodiMD" [ref=f7e44] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/codimd
+        - text: "|"
+        - link "版本" [ref=f7e45] [cursor=pointer]:
+          - /url: http://127.0.0.1:3219/team/s/release-notes
+        - text: "|"
+        - link "原始碼" [ref=f7e46] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/codimd/tree/772bf316f2ad49d98c5fa1a60d7569f079daa81c
+      - heading [level=6] [ref=f7e47]:
+        - text: 來
+        - link " GitHub" [ref=f7e48] [cursor=pointer]:
+          - /url: https://github.com/hackmdio/CodiMD
+          - generic [ref=f7e49]: 
+          - text: GitHub
+        - text: ","
+        - link " Gitter" [ref=f7e50] [cursor=pointer]:
+          - /url: https://gitter.im/hackmdio/hackmd
+          - generic [ref=f7e51]: 
+          - text: Gitter
+        - text: 或
+        - link " POEditor" [ref=f7e52] [cursor=pointer]:
+          - /url: https://poeditor.com/join/project/q0nuPWyztp
+          - generic [ref=f7e53]: 
+          - text: POEditor
+        - text: 和我們互動吧！
+  - status [ref=f7e54]

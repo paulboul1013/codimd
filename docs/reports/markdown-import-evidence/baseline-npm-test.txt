@@ -1,0 +1,249 @@
+
+> codimd@2.6.0 test
+> npm run-script lint && npm run-script jsonlint && npm run-script coverage
+
+
+> codimd@2.6.0 lint
+> standard
+
+
+> codimd@2.6.0 jsonlint
+> find . -type f -not -ipath "./.devcontainer/*" -not -ipath "./node_modules/*" -not -ipath "./.vscode/*" \( -name "*.json" -o -name "*.json.*" \) | xargs -n 1 -I{} -- bash -c 'echo {}; jq . {} > /dev/null;'
+
+xargs: warning: options --max-args and --replace/-I/-i are mutually exclusive, ignoring previous --max-args value
+./package.json
+./config.json.example
+./package-lock.json
+./scalingo.json
+./FUNDING.json
+./app.json
+./.github/tests/pull-request.json
+./locales/en.json
+./locales/el.json
+./locales/hr.json
+./locales/de.json
+./locales/da.json
+./locales/hi.json
+./locales/sr.json
+./locales/tr.json
+./locales/pl.json
+./locales/eo.json
+./locales/ru.json
+./locales/id.json
+./locales/zh-TW.json
+./locales/ja.json
+./locales/fr.json
+./locales/sv.json
+./locales/pt.json
+./locales/uk.json
+./locales/it.json
+./locales/ca.json
+./locales/es.json
+./locales/ko.json
+./locales/nl.json
+./locales/zh-CN.json
+
+> codimd@2.6.0 coverage
+> nyc mocha --require intelli-espower-loader --exit --recursive ./test
+
+2026-10-18T04:10:32.484Z warn: 	Neither 'domain' nor 'CMD_DOMAIN' is configured. This can cause issues with various components.
+Hint: Make sure 'protocolUseSSL' and 'urlAddPort' or 'CMD_PROTOCOL_USESSL' and 'CMD_URL_ADDPORT' are configured properly.
+2026-10-18T04:10:32.485Z warn: 	Session secret not set. Using random generated one. Please set `sessionSecret` in your config.js file. All users will be logged out.
+
+
+  OAuth2CustomStrategy
+    #extractProfileAttribute
+      ✓ should parse normal attribute correctly
+      ✓ should return undefined when nested object key not exists
+      ✓ should return undefined when whole object key not exists
+      ✓ should return attribute in array correct
+      ✓ should return undefined when array index out of bound
+      ✓ should return undefined when array key not exists
+      ✓ should return undefined when data is undefined
+
+  ProcessQueue
+    ✓ should not accept more than maximum task
+    ✓ should run task every interval (51ms)
+    ✓ should not crash when repeat stop queue
+    ✓ should run process when queue is empty (53ms)
+    ✓ should run process although error occurred (51ms)
+    ✓ should ignore trigger when event not complete (51ms)
+
+  Content security policies
+    ✓ Disable CDN
+    ✓ Disable Google Analytics
+    ✓ Disable Disqus
+    ✓ Set ReportURI
+    ✓ Set own directives
+    ✓ Unchanged hash for reveal.js speaker notes plugin
+
+  generateAvatarURL() gravatar enabled
+    ✓ should return correct urls
+    ✓ should return correct urls for names with spaces
+
+  generateAvatarURL() gravatar disabled
+    ✓ should return correct urls
+    ✓ should return correct urls for names with spaces
+
+  cleanDanglingUser
+    ✓ should call queueForDisconnectSpy when user is dangling (560ms)
+
+  realtime#connection
+    connection
+      ✓ should success connect (52ms)
+      fail
+        ✓ should fast return when server not start
+        ✓ should failed when parse noteId occur error (51ms)
+        ✓ should failed when noteId not exists (52ms)
+      flow
+        ✓ should establish connection (52ms)
+
+  realtime#update note is dirty timer
+    ✓ should update note when note is dirty
+    ✓ should not do anything when note missing (52ms)
+    ✓ should disconnect all clients when update note error (51ms)
+
+  realtime#disconnect
+    ✓ should disconnect success
+    1) "before each" hook for "should disconnect success when note is not dirty"
+
+  realtime#extractNoteIdFromSocket
+    urlPath not set
+      ✓ return false if socket or socket.handshake not exists
+      ✓ return false if query not set and referer not set
+      ✓ return noteId from query
+      ✓ return noteId from old method (referer)
+    urlPath is set
+      ✓ return noteId from old method (referer) and urlPath set
+
+  realtime#ifMayEdit
+    ✓ guest can edit note with permission freely
+    ✓ LoggedIn can edit note with permission freely (49ms)
+    ✓ Owner can edit note with permission freely (51ms)
+    ✓ guest can't edit note with permission editable (42ms)
+    ✓ LoggedIn can edit note with permission editable (44ms)
+    ✓ Owner can edit note with permission editable (43ms)
+    ✓ guest can't edit note with permission limited (43ms)
+    ✓ LoggedIn can edit note with permission limited (50ms)
+    ✓ Owner can edit note with permission limited (54ms)
+    ✓ guest can't edit note with permission locked (48ms)
+    ✓ LoggedIn can't edit note with permission locked (43ms)
+    ✓ Owner can edit note with permission locked (47ms)
+    ✓ guest can't edit note with permission protected (41ms)
+    ✓ LoggedIn can't edit note with permission protected (41ms)
+    ✓ Owner can edit note with permission protected (41ms)
+    ✓ guest can't edit note with permission private (45ms)
+    ✓ LoggedIn can't edit note with permission private (42ms)
+    ✓ Owner can edit note with permission private (49ms)
+    ✓ should set lsatchangeuser to null if guest edit operation (43ms)
+    ✓ should set lastchangeuser to logged_in user id if user edit (41ms)
+
+  realtime#parseNoteIdFromSocketAsync
+    ✓ should return null when socket not send noteId
+    noteId exists
+      ✓ should return noteId when noteId exists
+    noteId not exists
+      ✓ should return null when noteId not exists
+    parse note error
+      ✓ should return error when noteId parse error
+
+  realtime
+    checkViewPermission
+      freely
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+      editable
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+      limited
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+      locked
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+      protected
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+      private
+        ✓ guest permission test
+        ✓ loggedIn User permission test
+        ✓ loggedIn Owner permission test
+
+  save revision job
+    ✓ should execute save revision job every 5 min (87ms)
+    ✓ should not set saverSleep when more than 1 note save revision (99ms)
+
+  realtime#socket event
+    refresh
+      ✓ should call refresh
+    user status
+      ✓ should call emitUserStatus and update user data
+      ✓ should call emitUserStatus without userdata
+      ✓ should not call emitUserStatus when user not exists
+      ✓ should not call emitUserStatus when note not exists
+    disconnect
+      ✓ should push socket to disconnect queue and call disconnect function
+      ✓ should quick return when socket is in disconnect queue
+    cursor focus
+      ✓ should broadcast to all client
+      ✓ should not broadcast when note not exists
+      ✓ should not broadcast when user not exists
+    cursor activity
+      ✓ should broadcast to all client
+      ✓ should not broadcast when note not exists
+      ✓ should not broadcast when user not exists
+    cursor blur
+      ✓ should broadcast to all client
+      ✓ should not broadcast when note not exists
+      ✓ should not broadcast when user not exists
+    version
+      ✓ should emit server version
+    online users
+      ✓ should return online user list
+      ✓ should not return user list when note not exists
+    user changed
+      ✓ should call updateUserData
+      ✓ should direct return when note not exists
+      ✓ should direct return when note's users not exists
+    delete
+      ✓ should delete note when owner request
+      ✓ should not do anything when user not login
+      ✓ should not do anything when note not exists
+      ✓ should not do anything when note owner is not me
+      ✓ should not do anything when note destroy fail
+    permission
+      ✓ should disconnect when lose view permission
+      ✓ should not do anything when user not logged in
+      ✓ should not do anything when note not exists
+      ✓ should not do anything when not note owner
+      ✓ should change permission to freely when config allowAnonymous, allowAnonymousEdits and allowAnonymousViews are true
+      ✓ should not change permission to freely when config allowAnonymous, allowAnonymousEdits and allowAnonymousViews are false
+      ✓ should change permission to freely when config allowAnonymous is true
+      ✓ should not change permission to freely when config allowAnonymousEdits is true
+      ✓ should not change permission to freely when config allowAnonymousViews is true
+      ✓ should change permission to editable when config allowAnonymousViews is true
+      ✓ should change permission to freely when config allowAnonymousEdits and allowAnonymousViews are false true
+      ✓ should change permission to editable when config allowAnonymousEdits and allowAnonymousViews are false true
+
+  realtime#updateNote
+    ✓ should save history to each edited user (102ms)
+    ✓ should set lastchangeprofile when lastchangeuser is set (101ms)
+    ✓ should save note with new data (104ms)
+    ✓ should save note when lsatChangeUser is guest (97ms)
+    ✓ should save note when lastChangeUser as same as database (93ms)
+    ✓ should not save note when lastChangeUser not found in database (100ms)
+    ✓ should not save note when note.server not exists (100ms)
+
+
+  128 passing (6s)
+  1 failing
+
+  1) realtime#disconnect
+       "before each" hook for "should disconnect success when note is not dirty":
+     Error: Timeout of 2000ms exceeded. For async tests and hooks, ensure "done()" is called; if returning a Promise, ensure it resolves. (/tmp/codimd-markdown-import-baseline/test/realtime/disconnect-process.test.js)
+      at processImmediate (node:internal/timers:466:21)

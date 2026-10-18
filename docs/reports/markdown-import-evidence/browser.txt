@@ -1,0 +1,145 @@
+### Result
+{"home":"http://127.0.0.1:3219/team","posts":8,"checks":48,"results":["native file input remains hidden","cancelled selection sends no creation request","error: 檔案沒有內容","can select a file again","error: 檔案沒有內容","can select a file again","empty files send no creation request","error: 請選擇","can select a file again","unsupported extension sends no creation request","error: 檔案過大","can select a file again","oversize file receives server rejection","error: 無法匯入","can select a file again","server failure does not retry creation","error: 連線失敗","can select a file again","network failure does not retry creation","text parser rejects bodies above 10 MiB","GET /new preserves the deployment template","POST /new preserves the deployment template","article.MD creates exactly once","article.MD preserves normalized body","article.MD has exactly one initial revision","article.MD initial revision contains imported body","article.MD page title follows body rules","heading.Markdown creates exactly once","heading.Markdown preserves normalized body","heading.Markdown has exactly one initial revision","heading.Markdown initial revision contains imported body","heading.Markdown page title follows body rules","plain.TXT creates exactly once","plain.TXT preserves normalized body","plain.TXT has exactly one initial revision","plain.TXT initial revision contains imported body","plain.TXT page title follows body rules","whitespace.md creates exactly once","whitespace.md preserves normalized body","whitespace.md has exactly one initial revision","whitespace.md initial revision contains imported body","whitespace.md page title follows body rules","import button fits a narrow screen","JSON fixture is absent before import; use a fresh browser context","extensionless JSON history still imports","isolated test account is authenticated","authenticated import reports the body title","server history contains the imported title and tags"]}
+### Ran Playwright code
+```js
+await (async function checkMarkdownImport (page) {
+  const home = page.url().replace(/\/$/, '')
+  const fixtures = 'output/playwright/markdown-import-fixtures/'
+  const evidence = 'output/playwright/'
+  const results = []
+  let posts = 0
+  const countPost = request => {
+    if (request.method() === 'POST' && request.url() === home + '/new') posts++
+  }
+  page.on('request', countPost)
+  const check = (condition, message) => {
+    if (!condition) throw new Error(message)
+    results.push(message)
+  }
+  async function history () {
+    await page.goto(home)
+    await page.locator('.ui-history').click()
+    await page.locator('.ui-import-markdown').waitFor({ state: 'visible' })
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('#history')).opacity === '1')
+  }
+  async function upload (filename) {
+    await page.locator('.ui-markdown-file').setInputFiles(fixtures + filename)
+  }
+  async function errorContains (text) {
+    const error = page.locator('.ui-markdown-import-error')
+    await error.waitFor({ state: 'visible' })
+    check((await error.textContent()).includes(text), 'error: ' + text)
+    check(await page.locator('.ui-import-markdown').isEnabled(), 'can select a file again')
+  }
+  try {
+    await page.context().addCookies([{ name: 'locale', value: 'zh-TW', url: home }])
+    await history()
+    check(!await page.locator('.ui-markdown-file').isVisible(), 'native file input remains hidden')
+    await page.screenshot({ path: evidence + 'markdown-import-history.png', fullPage: true })
+    const initialPosts = posts
+    await page.locator('.ui-markdown-file').setInputFiles([])
+    check(posts === initialPosts, 'cancelled selection sends no creation request')
+    for (const filename of ['empty.md', 'cr-only.md']) {
+      await upload(filename)
+      await errorContains('檔案沒有內容')
+    }
+    check(posts === initialPosts, 'empty files send no creation request')
+    await page.screenshot({ path: evidence + 'markdown-import-empty.png', fullPage: true })
+    await upload('unsupported.csv')
+    await errorContains('請選擇')
+    check(posts === initialPosts, 'unsupported extension sends no creation request')
+    await upload('oversize.md')
+    await errorContains('檔案過大')
+    check(posts === initialPosts + 1, 'oversize file receives server rejection')
+
+    for (const [failure, message] of [['server', '無法匯入'], ['network', '連線失敗']]) {
+      const before = posts
+      await page.route(home + '/new', route => failure === 'server'
+        ? route.fulfill({ status: 500, body: 'test server failure' })
+        : route.abort('failed'))
+      await upload('article.MD')
+      await errorContains(message)
+      check(posts === before + 1, failure + ' failure does not retry creation')
+      await page.unroute(home + '/new')
+    }
+
+    const parserLimit = await page.request.post(home + '/new', {
+      headers: { 'Content-Type': 'text/markdown' },
+      data: 'x'.repeat(10 * 1024 * 1024 + 1)
+    })
+    check(parserLimit.status() === 413, 'text parser rejects bodies above 10 MiB')
+    // The isolated server uses this nonempty template to detect accidental fallback.
+    const template = '# 預設範本\n\n範本正文\n'
+    for (const method of ['GET', 'POST']) {
+      const blank = await page.request.fetch(home + '/new', {
+        method,
+        headers: { 'Content-Type': 'text/markdown' },
+        data: method === 'POST' ? '' : undefined
+      })
+      const content = await (await page.request.get(blank.url() + '/download')).text()
+      check(content === template, method + ' /new preserves the deployment template')
+    }
+
+    for (const [filename, title, expected] of [
+      ['article.MD', '中文匯入標題', '---\ntitle: 中文匯入標題\ntags: [匯入, 測試]\n---\n# H1 備用標題\n\n中文 UTF-8 正文。\n'],
+      ['heading.Markdown', 'H1 標題', '# H1 標題\n正文\n'],
+      ['plain.TXT', 'Untitled', '沒有標題的正文\n'],
+      ['whitespace.md', 'Untitled', ' \n']
+    ]) {
+      await history()
+      const before = posts
+      await upload(filename)
+      await page.waitForURL(url => url.href.startsWith(home + '/') && /^[A-Za-z0-9_-]{22}$/.test(url.pathname.split('/').pop()))
+      const noteURL = page.url()
+      check(posts === before + 1, filename + ' creates exactly once')
+      const download = await page.request.get(noteURL + '/download')
+      check(download.ok() && await download.text() === expected, filename + ' preserves normalized body')
+      const revisions = await (await page.request.get(noteURL + '/revision')).json()
+      check(revisions.revision.length === 1, filename + ' has exactly one initial revision')
+      const revision = await page.request.get(noteURL + '/revision/' + revisions.revision[0].time)
+      check((await revision.json()).content === expected, filename + ' initial revision contains imported body')
+      const expectedTitle = title === 'Untitled' ? 'CodiMD - Collaborative markdown notes' : title + ' - CodiMD'
+      check(await page.title() === expectedTitle, filename + ' page title follows body rules')
+      if (filename === 'article.MD') {
+        await page.locator('.markdown-body').first().waitFor({ state: 'visible' })
+        await page.screenshot({ path: evidence + 'markdown-import-success.png', fullPage: true })
+      }
+    }
+
+    await history()
+    await page.setViewportSize({ width: 375, height: 812 })
+    const bounds = await page.locator('.ui-import-markdown').boundingBox()
+    check(bounds && bounds.x >= 0 && bounds.x + bounds.width <= 375, 'import button fits a narrow screen')
+    await page.screenshot({ path: evidence + 'markdown-import-mobile.png', fullPage: true })
+    await page.setViewportSize({ width: 1280, height: 900 })
+    check(await page.getByRole('heading', { name: '歷史 JSON 保留', exact: true }).count() === 0, 'JSON fixture is absent before import; use a fresh browser context')
+    await page.locator('.ui-open-history input').setInputFiles(fixtures + 'codimd_history_fixture')
+    await page.getByRole('heading', { name: '歷史 JSON 保留', exact: true }).waitFor({ state: 'visible' })
+    check(true, 'extensionless JSON history still imports')
+
+    const email = 'markdown-import-' + Date.now() + '@example.test'
+    const form = { email, password: 'local-import-verification-only' }
+    await page.request.post(home + '/register', { form })
+    await page.request.post(home + '/login', { form })
+    const me = await (await page.request.get(home + '/me')).json()
+    check(me.status === 'ok', 'isolated test account is authenticated')
+    await history()
+    await upload('article.MD')
+    await page.waitForURL(url => url.href.startsWith(home + '/') && /^[A-Za-z0-9_-]{22}$/.test(url.pathname.split('/').pop()))
+    const ownedURL = page.url()
+    const info = await (await page.request.get(ownedURL + '/info')).json()
+    check(info.title === '中文匯入標題', 'authenticated import reports the body title')
+    const serverHistory = await (await page.request.get(home + '/history')).json()
+    const entry = serverHistory.history.find(item => item.id === ownedURL.split('/').pop())
+    check(entry && entry.text === '中文匯入標題' && entry.tags.includes('匯入') && entry.tags.includes('測試'), 'server history contains the imported title and tags')
+    return { home, posts, checks: results.length, results }
+  } finally {
+    page.off('request', countPost)
+  }
+})(page);
+```
+### Page
+- Page URL: http://127.0.0.1:3219/team/X3z6Nu8MSOeA96UCuaWFyg
+- Page Title: 中文匯入標題 - CodiMD
+### Events
+- New console entries: .playwright-cli/console-2026-10-18T04-15-45-421Z.log#L3-L23

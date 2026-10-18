@@ -1,0 +1,311 @@
+
+> codimd@2.6.0 build
+> cross-env NODE_ENV=production webpack --config webpack.prod.js --display errors-only -p
+
+Browserslist: browsers data (caniuse-lite) is 15 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+Child app:
+    Hash: bd73db73c06022d1be19
+    Version: webpack 4.39.1
+    Time: 135952ms
+    Built at: 10/18/2026 12:12:15 PM
+    Entrypoint font = font.68d91a5a4c1afd7f82a9.css font.6b9263cfd392f6104d26.js
+    Entrypoint common = common.3d96796dfd0296a436cd.js
+    Entrypoint cover [big] = cover.65bca5da2232a62861ce.css cover.bcb12cab91e5789ea04e.js
+    Entrypoint cover-styles-pack = cover-styles-pack.86abec95d60f3700f8c3.css cover-styles-pack.4ed00ad09bd2ce318e57.js
+    Entrypoint cover-pack [big] = cover-pack.65bca5da2232a62861ce.css cover-pack.be89fd83daedb0ecd562.js
+    Entrypoint index [big] = index.f3bfe8a4798713410a00.css index.e38b909dd8dd6f49f83d.js
+    Entrypoint index-styles = index-styles.2b91f0724d78a3270ed6.css index-styles.951a11e2799d6f7c5baf.js
+    Entrypoint index-styles-pack = index-styles-pack.9e7f37d9013612ae4fe0.css index-styles-pack.02c3ac22e3c7492f5e6a.js
+    Entrypoint index-pack [big] = index-pack.f3bfe8a4798713410a00.css index-pack.213bf031db42f7cb6dd1.js
+    Entrypoint pretty [big] = pretty.99faaceba4da8e055842.css pretty.6116edd4deb733c44526.js
+    Entrypoint pretty-styles = pretty-styles.eca569fbe8e9f8cf4740.css pretty-styles.ed814e7f0f6ccd0021a6.js
+    Entrypoint pretty-styles-pack = pretty-styles-pack.a5e782aa744c23ca0aac.css pretty-styles-pack.2e540bfcd9cb54dd9305.js
+    Entrypoint pretty-pack [big] = pretty-pack.99faaceba4da8e055842.css pretty-pack.c4f63c815348546345be.js
+    Entrypoint slide [big] = slide.2ae94d8b68f54735e41f.css slide.2fbf0dcc54b89aee8deb.js
+    Entrypoint slide-styles = slide-styles.5f98b0398e0274af56f6.css slide-styles.64779d0c5ab80be984c4.js
+    Entrypoint slide-styles-pack = slide-styles-pack.d14f097970bc7c936e2b.css slide-styles-pack.683e338e91c6fcf35658.js
+    Entrypoint slide-pack [big] = slide-pack.2ae94d8b68f54735e41f.css slide-pack.6992dcb8f6709009eb3e.js
+    [2017] ./public/css/google-font.css 39 bytes {4} [built]
+    [2018] multi expose-loader?jQuery!expose-loader?$!jquery velocity-animate imports-loader?$=jquery!jquery-mousewheel bootstrap 64 bytes {0} [built]
+    [2032] multi core-js/stable regenerator-runtime/runtime ./public/js/cover.js 52 bytes {1} [built]
+    [2033] multi ./node_modules/bootstrap/dist/css/bootstrap.min.css ./public/css/bootstrap-social.css ./node_modules/select2/select2.css ./node_modules/select2/select2-bootstrap.css 64 bytes {3} [built]
+    [2036] multi core-js/stable regenerator-runtime/runtime bootstrap-validator expose-loader?select2!select2 expose-loader?moment!moment ./public/js/cover.js 88 bytes {2} [built]
+    [2040] multi core-js/stable regenerator-runtime/runtime script-loader!jquery-ui-resizable script-loader!codemirror script-loader!inlineAttachment script-loader!jqueryTextcomplete script-loader!codemirrorInlineAttachment script-loader!ot flowchart.js imports-loader?Raphael=raphael!js-sequence-diagrams ./public/js/index.js 148 bytes {5} [built]
+    [2041] multi ./public/vendor/jquery-ui/jquery-ui.min.css ./public/vendor/codemirror-spell-checker/spell-checker.min.css ./node_modules/@hackmd/codemirror/lib/codemirror.css ./node_modules/@hackmd/codemirror/addon/fold/foldgutter.css ./node_modules/@hackmd/codemirror/addon/display/fullscreen.css ./node_modules/@hackmd/codemirror/addon/dialog/dialog.css ./node_modules/@hackmd/codemirror/addon/scroll/simplescrollbars.css ./node_modules/@hackmd/codemirror/addon/search/matchesonscrollbar.css ./node_modules/@hackmd/codemirror/theme/monokai.css ./node_modules/@hackmd/codemirror/theme/one-dark.css ./node_modules/@hackmd/codemirror/theme/dracula.css ./node_modules/@hackmd/codemirror/theme/material.css ./node_modules/@hackmd/codemirror/theme/nord.css ./node_modules/@hackmd/codemirror/theme/panda-syntax.css ./node_modules/@hackmd/codemirror/theme/solarized.css ./public/css/codemirror-extend/ayu-dark.css ./public/css/codemirror-extend/ayu-mirage.css ./public/css/codemirror-extend/tomorrow-night-bright.css ./public/css/codemirror-extend/tomorrow-night-eighties.css ./public/css/codemirror-extend/one-dark.css ./node_modules/@hackmd/codemirror/mode/tiddlywiki/tiddlywiki.css ./node_modules/@hackmd/codemirror/mode/mediawiki/mediawiki.css ./public/css/github-extract.css ./public/vendor/showup/showup.css ./public/css/mermaid.css ./public/css/markdown.css ./public/css/slide-preview.css 340 bytes {7} [built]
+    [2065] multi ./node_modules/bootstrap/dist/css/bootstrap.min.css ./public/css/bootstrap-social.css ./node_modules/ionicons/css/ionicons.min.css ./node_modules/leaflet/dist/leaflet.css 64 bytes {8} [built]
+    [2066] multi core-js/stable regenerator-runtime/runtime script-loader!jquery-ui-resizable bootstrap-validator expose-loader?jsyaml!js-yaml expose-loader?moment!moment script-loader!handlebars expose-loader?hljs!highlight.js emojify.js script-loader!gist-embed script-loader!codemirror script-loader!inlineAttachment script-loader!jqueryTextcomplete script-loader!codemirrorInlineAttachment script-loader!ot flowchart.js imports-loader?Raphael=raphael!js-sequence-diagrams script-loader!viz.js script-loader!viz.render.js script-loader!abcjs script-loader!vega script-loader!vega-lite script-loader!vega-embed expose-loader?io!socket.io-client expose-loader?L!leaflet ./public/js/index.js 328 bytes {6} [built]
+    [2095] multi core-js/stable regenerator-runtime/runtime flowchart.js imports-loader?Raphael=raphael!js-sequence-diagrams ./public/js/pretty.js 76 bytes {9} [built]
+    [2096] multi ./public/css/github-extract.css ./public/css/mermaid.css ./public/css/markdown.css ./public/css/slide-preview.css 64 bytes {11} [built]
+    [2097] multi ./node_modules/bootstrap/dist/css/bootstrap.min.css ./node_modules/ionicons/css/ionicons.min.css ./node_modules/leaflet/dist/leaflet.css 52 bytes {12} [built]
+    [2098] multi core-js/stable regenerator-runtime/runtime expose-loader?jsyaml!js-yaml expose-loader?moment!moment script-loader!handlebars expose-loader?hljs!highlight.js emojify.js script-loader!gist-embed flowchart.js imports-loader?Raphael=raphael!js-sequence-diagrams script-loader!viz.js script-loader!viz.render.js script-loader!abcjs script-loader!vega script-loader!vega-lite script-loader!vega-embed expose-loader?L!leaflet ./public/js/pretty.js 232 bytes {10} [built]
+    [2099] multi core-js/stable regenerator-runtime/runtime bootstrap-tooltip flowchart.js imports-loader?Raphael=raphael!js-sequence-diagrams ./public/js/slide.js 88 bytes {13} [built]
+    [2100] multi ./public/vendor/bootstrap/tooltip.min.css ./public/css/github-extract.css ./public/css/mermaid.css ./public/css/markdown.css 64 bytes {15} [built]
+        + 2347 hidden modules
+
+    WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+    This can impact web performance.
+    Assets:
+      28df6ee7b407fd8a14b40bc01f4fd3ae.svg (326 KiB)
+      cover.bcb12cab91e5789ea04e.js (343 KiB)
+      cover-pack.be89fd83daedb0ecd562.js (705 KiB)
+      index.e38b909dd8dd6f49f83d.js (3.09 MiB)
+      index-pack.213bf031db42f7cb6dd1.js (7.81 MiB)
+      pretty.6116edd4deb733c44526.js (1.83 MiB)
+      pretty-pack.c4f63c815348546345be.js (6.47 MiB)
+      slide.2fbf0dcc54b89aee8deb.js (1.84 MiB)
+      slide-pack.6992dcb8f6709009eb3e.js (6.67 MiB)
+      leaflet/leaflet-src.js (399 KiB)
+      fork-awesome/fonts/forkawesome-webfont.svg (470 KiB)
+      dictionary-en-gb/index.dic (539 KiB)
+      dictionary-de/index.dic (1.06 MiB)
+      leaflet/leaflet-src.esm.js (398 KiB)
+      dictionary-de-at/index.dic (1.07 MiB)
+      dictionary-de-ch/index.dic (1.07 MiB)
+      reveal.js/plugin/highlight/highlight.js (724 KiB)
+      reveal.js/lib/font/source-sans-pro/source-sans-pro-regular.ttf (281 KiB)
+      reveal.js/lib/font/source-sans-pro/source-sans-pro-semibold.ttf (278 KiB)
+      mermaid/mermaid.min.js (2.52 MiB)
+      MathJax/config/Accessible-full.js (356 KiB)
+      MathJax/config/AM_HTMLorMML-full.js (292 KiB)
+      MathJax/config/MML_HTMLorMML-full.js (274 KiB)
+      MathJax/config/TeX-AMS_CHTML-full.js (283 KiB)
+      MathJax/config/TeX-AMS_HTML-full.js (307 KiB)
+      MathJax/config/TeX-AMS_SVG-full.js (275 KiB)
+      MathJax/config/TeX-AMS-MML_HTMLorMML-full.js (356 KiB)
+      MathJax/config/TeX-AMS-MML_SVG-full.js (296 KiB)
+      MathJax/config/TeX-MML-AM_CHTML-full.js (342 KiB)
+      MathJax/config/TeX-MML-AM_CHTML.js (274 KiB)
+      MathJax/config/TeX-MML-AM_SVG-full.js (334 KiB)
+      MathJax/config/TeX-MML-AM_HTMLorMML-full.js (395 KiB)
+      MathJax/config/TeX-MML-AM_HTMLorMML.js (278 KiB)
+      MathJax/config/TeX-MML-AM_SVG.js (274 KiB)
+      MathJax/extensions/a11y/mathjax-sre.js (474 KiB)
+      emojify.js/dist/css/data-uri/emojify.css (7.24 MiB)
+      emojify.js/dist/css/data-uri/emojify.min.css (7.21 MiB)
+      MathJax/extensions/a11y/mathmaps/mathmaps_ie.js (887 KiB)
+      MathJax/fonts/HTML-CSS/Gyre-Pagella/eot/GyrePagellaMathJax_NonUnicode-Regular.eot (248 KiB)
+      MathJax/fonts/HTML-CSS/Latin-Modern/eot/LatinModernMathJax_NonUnicode-Regular.eot (377 KiB)
+      MathJax/fonts/HTML-CSS/Latin-Modern/otf/LatinModernMathJax_NonUnicode-Regular.otf (312 KiB)
+      MathJax/jax/output/SVG/fonts/Gyre-Pagella/NonUnicode/Regular/Main.js (610 KiB)
+      MathJax/jax/output/SVG/fonts/Gyre-Termes/NonUnicode/Regular/Main.js (559 KiB)
+      MathJax/jax/output/SVG/fonts/Latin-Modern/NonUnicode/Regular/Main.js (961 KiB)
+      MathJax/jax/output/SVG/fonts/Neo-Euler/NonUnicode/Regular/Main.js (538 KiB)
+      MathJax/unpacked/extensions/a11y/mathjax-sre.js (474 KiB)
+      MathJax/unpacked/extensions/a11y/mathmaps/mathmaps_ie.js (887 KiB)
+      MathJax/unpacked/jax/output/SVG/fonts/Gyre-Pagella/NonUnicode/Regular/Main.js (618 KiB)
+      MathJax/unpacked/jax/output/SVG/fonts/Gyre-Termes/NonUnicode/Regular/Main.js (566 KiB)
+      MathJax/unpacked/jax/output/SVG/fonts/Latin-Modern/NonUnicode/Regular/Main.js (971 KiB)
+      MathJax/unpacked/jax/output/SVG/fonts/Neo-Euler/NonUnicode/Regular/Main.js (544 KiB)
+
+    WARNING in entrypoint size limit: The following entrypoint(s) combined asset size exceeds the recommended limit (244 KiB). This can impact web performance.
+    Entrypoints:
+      cover (351 KiB)
+          cover.65bca5da2232a62861ce.css
+          cover.bcb12cab91e5789ea04e.js
+      cover-pack (714 KiB)
+          cover-pack.65bca5da2232a62861ce.css
+          cover-pack.be89fd83daedb0ecd562.js
+      index (3.13 MiB)
+          index.f3bfe8a4798713410a00.css
+          index.e38b909dd8dd6f49f83d.js
+      index-pack (7.84 MiB)
+          index-pack.f3bfe8a4798713410a00.css
+          index-pack.213bf031db42f7cb6dd1.js
+      pretty (1.85 MiB)
+          pretty.99faaceba4da8e055842.css
+          pretty.6116edd4deb733c44526.js
+      pretty-pack (6.49 MiB)
+          pretty-pack.99faaceba4da8e055842.css
+          pretty-pack.c4f63c815348546345be.js
+      slide (1.86 MiB)
+          slide.2ae94d8b68f54735e41f.css
+          slide.2fbf0dcc54b89aee8deb.js
+      slide-pack (6.69 MiB)
+          slide-pack.2ae94d8b68f54735e41f.css
+          slide-pack.6992dcb8f6709009eb3e.js
+
+
+    WARNING in webpack performance recommendations:
+    You can limit the size of your bundles by using import() or require.ensure to lazy load some parts of your application.
+    For more info visit https://webpack.js.org/guides/code-splitting/
+    Child HtmlWebpackCompiler:
+        Entrypoint HtmlWebpackPlugin_0 = __child-HtmlWebpackPlugin_0
+        Entrypoint HtmlWebpackPlugin_1 = __child-HtmlWebpackPlugin_1
+        [0] ./node_modules/html-webpack-plugin/lib/loader.js!./public/views/includes/header.ejs 546 bytes {0} [built]
+        [1] ./node_modules/html-webpack-plugin/lib/loader.js!./public/views/includes/scripts.ejs 647 bytes {1} [built]
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/dialog/dialog.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/display/fullscreen.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/fold/foldgutter.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/hint/show-hint.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/scroll/simplescrollbars.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/addon/search/matchesonscrollbar.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/lib/codemirror.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/mode/mediawiki/mediawiki.css:
+        Entrypoint mini-css-extract-plugin = *
+           9 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/mode/tiddlywiki/tiddlywiki.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/dracula.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/material.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/monokai.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/nord.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/one-dark.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/panda-syntax.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/@hackmd/codemirror/theme/solarized.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/bootstrap/dist/css/bootstrap.min.css:
+        Entrypoint mini-css-extract-plugin = *
+           8 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/highlight.js/styles/github-gist.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/ionicons/css/ionicons.min.css:
+        Entrypoint mini-css-extract-plugin = *
+           7 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/leaflet/dist/leaflet.css:
+        Entrypoint mini-css-extract-plugin = *
+           6 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/prismjs/themes/prism.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/select2/select2-bootstrap.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/select2/select2.css:
+        Entrypoint mini-css-extract-plugin = *
+           6 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!node_modules/spin.js/spin.css:
+        Entrypoint mini-css-extract-plugin = *
+           2 modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/bootstrap-social.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/bootstrap-social.css 20.1 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/codemirror-extend/ayu-dark.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/codemirror-extend/ayu-dark.css 2.39 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/codemirror-extend/ayu-mirage.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/codemirror-extend/ayu-mirage.css 2.5 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/codemirror-extend/one-dark.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/codemirror-extend/one-dark.css 395 bytes {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/codemirror-extend/tomorrow-night-bright.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/codemirror-extend/tomorrow-night-bright.css 1.92 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/codemirror-extend/tomorrow-night-eighties.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/codemirror-extend/tomorrow-night-eighties.css 2.58 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/cover.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/cover.css 8.14 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/extra.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/extra.css 12.2 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/github-extract.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/github-extract.css 10.4 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/google-font.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/google-font.css 377 bytes {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/index.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/index.css 13.9 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/markdown.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/markdown.css 4.74 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/mermaid.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/mermaid.css 5.37 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/site.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/site.css 918 bytes {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/slide-preview.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/slide-preview.css 1.27 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/js/lib/renderer/fretboard/css/i.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/js/lib/renderer/fretboard/css/i.css 2.88 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/js/lib/renderer/lightbox/lightbox.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/js/lib/renderer/lightbox/lightbox.css 2.68 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/vendor/bootstrap/tooltip.min.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/vendor/bootstrap/tooltip.min.css 6.96 KiB {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/vendor/codemirror-spell-checker/spell-checker.min.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/vendor/codemirror-spell-checker/spell-checker.min.css 457 bytes {0} [built]
+            + 1 hidden module
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/vendor/jquery-ui/jquery-ui.min.css:
+        Entrypoint mini-css-extract-plugin = *
+         [0] ./public/vendor/jquery-ui/images/ui-icons_222222_256x240.png 4.93 KiB {0} [built]
+         [1] ./public/vendor/jquery-ui/images/ui-icons_454545_256x240.png 4.93 KiB {0} [built]
+         [2] ./public/vendor/jquery-ui/images/ui-bg_flat_0_aaaaaa_40x100.png 157 bytes {0} [built]
+         [3] ./node_modules/css-loader!./public/vendor/jquery-ui/jquery-ui.min.css 15.8 KiB {0} [built]
+         [6] ./public/vendor/jquery-ui/images/ui-bg_flat_75_ffffff_40x100.png 141 bytes {0} [built]
+         [7] ./public/vendor/jquery-ui/images/ui-bg_highlight-soft_75_cccccc_1x100.png 205 bytes {0} [built]
+         [8] ./public/vendor/jquery-ui/images/ui-bg_glass_75_e6e6e6_1x400.png 213 bytes {0} [built]
+         [9] ./public/vendor/jquery-ui/images/ui-bg_glass_75_dadada_1x400.png 209 bytes {0} [built]
+        [10] ./public/vendor/jquery-ui/images/ui-bg_glass_65_ffffff_1x400.png 141 bytes {0} [built]
+        [11] ./public/vendor/jquery-ui/images/ui-bg_glass_55_fbf9ee_1x400.png 293 bytes {0} [built]
+        [12] ./public/vendor/jquery-ui/images/ui-bg_glass_95_fef1ec_1x400.png 293 bytes {0} [built]
+        [13] ./public/vendor/jquery-ui/images/ui-icons_888888_256x240.png 4.93 KiB {0} [built]
+        [14] ./public/vendor/jquery-ui/images/ui-icons_2e83ff_256x240.png 4.93 KiB {0} [built]
+        [15] ./public/vendor/jquery-ui/images/ui-icons_cd0a0a_256x240.png 4.93 KiB {0} [built]
+            + 2 hidden modules
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/vendor/showup/showup.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/vendor/showup/showup.css 2.58 KiB {0} [built]
+            + 1 hidden module
+Child save-as-html:
+    Child mini-css-extract-plugin node_modules/css-loader/index.js!public/css/extra.css:
+        Entrypoint mini-css-extract-plugin = *
+        [0] ./node_modules/css-loader!./public/css/extra.css 12.2 KiB {0} [built]
+            + 1 hidden module

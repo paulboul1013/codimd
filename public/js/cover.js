@@ -26,6 +26,7 @@ import {
 import { saveAs } from 'file-saver'
 import List from 'list.js'
 import unescapeHTML from 'lodash/unescape'
+import setupMarkdownImport from './lib/markdown-import'
 
 require('./locale')
 
@@ -340,6 +341,16 @@ $('.ui-open-history').bind('change', e => {
   }
   reader.readAsText(file)
 })
+
+const markdownInput = document.querySelector('.ui-markdown-file')
+if (markdownInput) {
+  setupMarkdownImport({
+    input: markdownInput,
+    button: document.querySelector('.ui-import-markdown'),
+    error: document.querySelector('.ui-markdown-import-error'),
+    serverURL: serverurl
+  })
+}
 
 $('.ui-clear-history').click(() => {
   $('.ui-delete-history-modal-msg').text('Do you really want to clear all history?')
