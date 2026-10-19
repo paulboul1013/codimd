@@ -1,0 +1,174 @@
+#!/usr/bin/env python3
+"""Start the existing local Docker service on http://localhost:3000/."""
+import argparse
+import json
+import shutil
+import subprocess
+import sys
+import time
+from html.parser import HTMLParser
+from pathlib import Path
+from urllib.parse import urljoin, urlsplit
+from urllib.request import urlopen
+
+
+ROOT = Path(__file__).resolve().parents[1]
+APP = 'codimd-local-app-1'
+DATABASE = 'codimd-local-database-1'
+NETWORK = 'codimd-local_default'
+URL = 'http://localhost:3000/'
+
+
+class Assets(HTMLParser):
+  def __init__(self):
+    super().__init__()
+    self.assets = []
+
+  def handle_starttag(self, tag, attrs):
+    attrs = dict(attrs)
+    if tag == 'link' and 'stylesheet' in attrs.get('rel', '').split():
+      self.assets.append(('CSS', attrs.get('href', '')))
+    if tag == 'script' and attrs.get('src'):
+      self.assets.append(('JavaScript', attrs['src']))
+
+
+def check_service(base_url=URL):
+  """Reject wrong services, wrong asset origins, missing files, and HTML fallbacks."""
+  origin = urlsplit(base_url)[:2]
+
+  def fetch(url, expected_types):
+    if urlsplit(url)[:2] != origin:
+      raise RuntimeError(f'Wrong asset origin: {url}; expected {base_url}')
+    try:
+      with urlopen(url, timeout=5) as response:
+        if urlsplit(response.geturl())[:2] != origin:
+          raise RuntimeError(f'Wrong redirect origin: {response.geturl()}')
+        mime = response.headers.get_content_type()
+        if mime not in expected_types:
+          raise RuntimeError(f'{url}: expected {" or ".join(expected_types)}, got {mime}')
+        body = response.read() if mime == 'text/html' else response.read(1)
+        if not body:
+          raise RuntimeError(f'Empty response: {url}')
+        return body
+    except OSError as error:
+      raise RuntimeError(f'{url}: {error}') from error
+
+  html = fetch(base_url, ('text/html',)).decode('utf-8')
+  if '<title>CodiMD' not in html:
+    raise RuntimeError(f'{base_url} is not the CodiMD home page')
+  page = Assets()
+  page.feed(html)
+  if not any(kind == 'CSS' for kind, _ in page.assets):
+    raise RuntimeError('CodiMD home page has no stylesheet links')
+  if not any(kind == 'JavaScript' for kind, _ in page.assets):
+    raise RuntimeError('CodiMD home page has no JavaScript links')
+  for kind, href in page.assets:
+    types = ('text/css',) if kind == 'CSS' else ('application/javascript', 'text/javascript')
+    try:
+      fetch(urljoin(base_url, href), types)
+    except RuntimeError as error:
+      raise RuntimeError(f'{kind} check failed: {error}') from error
+  return len(page.assets)
+
+
+def run(*args):
+  print('+ ' + ' '.join(args), flush=True)
+  subprocess.run(args, cwd=ROOT, check=True)
+
+
+def inspect(name):
+  try:
+    return json.loads(subprocess.check_output(['docker', 'inspect', name]))[0]
+  except subprocess.CalledProcessError as error:
+    raise RuntimeError(
+      f'Cannot inspect {name}. Docker must be running and the existing local '
+      'containers must be present. This script preserves their configuration and database.'
+    ) from error
+
+
+def wait_for_database():
+  deadline = time.monotonic() + 60
+  while time.monotonic() < deadline:
+    state = inspect(DATABASE)['State']
+    if state['Running'] and state.get('Health', {}).get('Status', 'healthy') == 'healthy':
+      return
+    time.sleep(1)
+  raise RuntimeError(f'Database not ready after 60 seconds. Check: docker logs {DATABASE}')
+
+
+def wait_for_http():
+  deadline = time.monotonic() + 60
+  while time.monotonic() < deadline:
+    try:
+      with urlopen(URL, timeout=2):
+        return
+    except OSError:
+      time.sleep(1)
+  raise RuntimeError(f'CodiMD not ready after 60 seconds. Check: docker logs {APP}')
+
+
+def start(build):
+  if not shutil.which('docker'):
+    raise RuntimeError('Docker is required to start the local service.')
+  app = inspect(APP)
+  database = inspect(DATABASE)
+  config = app['Config']
+  if config['Image'] != 'node:16.20.2-bullseye':
+    raise RuntimeError(f'{APP} must use node:16.20.2-bullseye.')
+  if not any(m['Type'] == 'bind' and Path(m['Source']).resolve() == ROOT
+             and m['Destination'] == config['WorkingDir'] for m in app['Mounts']):
+    raise RuntimeError(f'{APP} must mount this repository at its working directory.')
+  binding = app['HostConfig']['PortBindings'].get('3000/tcp', [])
+  if binding != [{'HostIp': '127.0.0.1', 'HostPort': '3000'}]:
+    raise RuntimeError(f'{APP} must publish 127.0.0.1:3000:3000.')
+
+  if not database['State']['Running']:
+    run('docker', 'start', DATABASE)
+  wait_for_database()
+  if NETWORK not in app['NetworkSettings']['Networks']:
+    run('docker', 'network', 'connect', NETWORK, APP)
+  if build:
+    # Build with Node 16 even when the host has a different Node version.
+    command = ['docker', 'run', '--rm', '--volumes-from', APP,
+               '--workdir', config['WorkingDir'], '--env', 'npm_config_cache=/tmp/npm-cache']
+    if config['User']:
+      command.extend(['--user', config['User']])
+    run(*command, config['Image'], 'npm', 'run', 'build')
+
+  action = 'restart' if app['State']['Running'] else 'start'
+  try:
+    run('docker', action, APP)
+  except subprocess.CalledProcessError as error:
+    raise RuntimeError(
+      'CodiMD must use port 3000. Inspect conflicts with: ss -ltnp "sport = :3000". '
+      'Configure editor Live Preview to use port 5502, then retry. '
+      'The script will not select another port.'
+    ) from error
+  wait_for_http()
+  actual_url = subprocess.check_output([
+    'docker', 'exec', APP, 'node', '-e',
+    'process.stdout.write(require("./lib/config").serverURL)'
+  ], text=True)
+  if actual_url.rstrip('/') != URL.rstrip('/'):
+    raise RuntimeError(f'CodiMD serverURL is {actual_url!r}; expected {URL.rstrip("/")!r}.')
+
+
+def main():
+  parser = argparse.ArgumentParser(description=__doc__)
+  mode = parser.add_mutually_exclusive_group()
+  mode.add_argument('--build', action='store_true', help='rebuild frontend assets with Node 16 before restarting')
+  mode.add_argument('--check', action='store_true', help='check the running service and assets without restarting')
+  args = parser.parse_args()
+  try:
+    if not args.check:
+      start(args.build)
+    count = check_service()
+  except (RuntimeError, subprocess.CalledProcessError) as error:
+    print(f'ERROR: {error}', file=sys.stderr)
+    return 1
+  print(f'Ready: {URL} ({count} CSS/JavaScript assets verified)')
+  return 0
+
+
+if __name__ == '__main__':
+  sys.exit(main())
