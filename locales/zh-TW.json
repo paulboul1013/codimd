@@ -146,5 +146,6 @@
 	"The file is too large to import.": "檔案過大，無法匯入。",
 	"Please sign in before importing Markdown.": "請先登入，再匯入 Markdown。",
 	"Unable to import Markdown. Please try again.": "無法匯入 Markdown，請再試一次。",
-	"The connection failed. The note may already have been created. Check your history before trying again.": "連線失敗，筆記可能已建立。請先查看歷史記錄，再決定是否重試。"
+	"The connection failed. The note may already have been created. Check your history before trying again.": "連線失敗，筆記可能已建立。請先查看歷史記錄，再決定是否重試。",
+	"Sign in to open the shared note.": "登入後會回到分享的筆記。"
 }

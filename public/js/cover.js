@@ -87,6 +87,11 @@ function pageInit () {
       $('.ui-name').html('')
       $('.ui-signout').hide()
       parseStorageToHistory(historyList, parseHistoryCallback)
+      // a shared note sent the visitor here to sign in first
+      if (new URLSearchParams(window.location.search).get('next')) {
+        $('.ui-signin-return-hint').prop('hidden', false)
+        $('.signin-modal').modal('show')
+      }
     }
   )
 }

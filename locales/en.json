@@ -125,5 +125,6 @@
 	"The file is too large to import.": "The file is too large to import.",
 	"Please sign in before importing Markdown.": "Please sign in before importing Markdown.",
 	"Unable to import Markdown. Please try again.": "Unable to import Markdown. Please try again.",
-	"The connection failed. The note may already have been created. Check your history before trying again.": "The connection failed. The note may already have been created. Check your history before trying again."
+	"The connection failed. The note may already have been created. Check your history before trying again.": "The connection failed. The note may already have been created. Check your history before trying again.",
+	"Sign in to open the shared note.": "Sign in to open the shared note."
 }

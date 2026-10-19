@@ -8,6 +8,13 @@
                 <h4 class="modal-title" id="mySmallModalLabel"><%= __('Choose method') %></h4>
             </div>
             <div class="modal-body" style="text-align: center;">
+                <p class="text-info ui-signin-return-hint" hidden><%= __('Sign in to open the shared note.') %></p>
+                <% if (typeof errorMessage !== 'undefined' && errorMessage && errorMessage.length > 0) { %>
+                <div class="alert alert-danger"><%= errorMessage %></div>
+                <% } %>
+                <% if (typeof infoMessage !== 'undefined' && infoMessage && infoMessage.length > 0) { %>
+                <div class="alert alert-info"><%= infoMessage %></div>
+                <% } %>
                 <% if (authProviders.facebook) { %>
                 <a href="<%- serverURL %>/auth/facebook" class="btn btn-lg btn-block btn-login-method btn-facebook">
                     <i class="fa fa-facebook"></i> <%= __('Sign in via %s', 'Facebook') %>
