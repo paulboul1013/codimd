@@ -29,6 +29,7 @@ function makeMockSocket (headers, query) {
       }
     },
     disconnect: sinon.fake(),
+    leave: sinon.fake(),
     rooms: []
   }
 }

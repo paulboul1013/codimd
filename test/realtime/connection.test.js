@@ -188,6 +188,26 @@ describe('realtime#connection', function () {
           done()
         }, 50)
       })
+
+      it('should keep a room in use when another connection is rejected', function (done) {
+        const noteId = 'note123'
+        const mockSocket = makeMockSocket(null, { noteId })
+        mockSocket.request.user = { logged_in: true, id: 'revoked-user' }
+        realtime.maintenance = false
+        sinon.stub(realtime, 'parseNoteIdFromSocketAsync').callsFake(async () => noteId)
+        sinon.stub(realtime, 'checkViewPermission').returns(false)
+        sinon.stub(realtime, 'updateUserData')
+        const ownerRoom = { id: noteId, users: { owner: { userid: 'owner' } }, socks: [] }
+        realtime.getNotePool()[noteId] = ownerRoom
+        realtime.connection(mockSocket)
+        setTimeout(() => {
+          assert.deepStrictEqual(mockSocket.emit.lastCall.args, ['info', { code: 403 }])
+          assert(mockSocket.disconnect.calledOnce)
+          assert.strictEqual(realtime.getNotePool()[noteId], ownerRoom)
+          assert(!realtime.getUserPool()[mockSocket.id])
+          done()
+        }, 50)
+      })
     })
   })
 })

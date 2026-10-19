@@ -232,10 +232,22 @@ describe('realtime#socket event', function () {
         assert(broadChannelEmitFake.lastCall.args[0] === event)
         if (event === 'cursor blur') {
           assert(broadChannelEmitFake.lastCall.args[1].id === clientSocket.id)
+          assert.strictEqual(broadChannelEmitFake.lastCall.args[1].blur, true)
         } else {
+          assert.strictEqual(broadChannelEmitFake.lastCall.args[1].blur, false)
           assert.deepStrictEqual(broadChannelEmitFake.lastCall.args[1].cursor, cursorData)
         }
       })
+
+      if (event === 'cursor blur') {
+        it('should keep the last cursor position for a dimmed remote cursor', () => {
+          eventFuncMap.get('cursor activity')(cursorData)
+          cursorFocusFunc()
+          const out = clientSocket.broadcast.to(noteId).emit.lastCall.args[1]
+          assert.deepStrictEqual(out.cursor, cursorData)
+          assert.strictEqual(out.blur, true)
+        })
+      }
 
       it('should not broadcast when note not exists', () => {
         delete realtime.notes[noteId]
@@ -501,6 +513,44 @@ describe('realtime#socket event', function () {
         assert(otherClient.disconnect.calledOnce)
         done()
       }, 5)
+    })
+
+    it('should acknowledge success only after the change is saved and applied', function (done) {
+      realtime.getNoteFromNotePool(noteId).permission = 'limited'
+      realtime.getNoteFromNotePool(noteId).socks = [clientSocket, otherClient]
+
+      permissionFunc('private', function (result) {
+        assert.deepStrictEqual(result, { ok: true, permission: 'private' })
+        assert.strictEqual(realtime.getNoteFromNotePool(noteId).permission, 'private')
+        assert(otherClient.revoked)
+        assert(otherClient.leave.calledWith(noteId))
+        assert(otherClient.leave.calledBefore(realtime.io.to(noteId).emit))
+        assert.deepStrictEqual(otherClient.emit.lastCall.args, ['info', { code: 403, reason: 'revoked' }])
+        assert(clientSocket.leave.called === false)
+        done()
+      })
+    })
+
+    it('should acknowledge a failed save without claiming success', function (done) {
+      realtime.getNoteFromNotePool(noteId).permission = 'limited'
+      realtime.getNoteFromNotePool(noteId).socks = [clientSocket, otherClient]
+      modelsMock.Note.update = sinon.stub().returns(Promise.reject(new Error('db down')))
+
+      permissionFunc('private', function (result) {
+        assert.deepStrictEqual(result, { ok: false, code: 'save-failed' })
+        assert.strictEqual(realtime.getNoteFromNotePool(noteId).permission, 'limited')
+        assert(otherClient.emit.called === false)
+        done()
+      })
+    })
+
+    it('should reject a nonowner with a forbidden acknowledgement', function (done) {
+      clientSocket.request.user.id = 'other_user_id'
+      permissionFunc('limited', function (result) {
+        assert.deepStrictEqual(result, { ok: false, code: 'forbidden' })
+        assert(modelsMock.Note.update.called === false)
+        done()
+      })
     })
 
     it('should not do anything when user not logged in', function (done) {
