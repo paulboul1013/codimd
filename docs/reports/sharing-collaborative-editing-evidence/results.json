@@ -1,0 +1,1027 @@
+{
+  "runId": "2026-10-19T05-53-22-454Z-e72724",
+  "baseURL": "http://localhost:3000",
+  "verdict": "ACCEPTED",
+  "accounts": {
+    "owner": {
+      "id": "f6a9a6b3-cc9e-48b0-8a94-645387ac6bcf",
+      "name": "root1"
+    },
+    "collaborator": {
+      "id": "3b626bea-0bdb-4969-b6db-23b5ac3dbbcf",
+      "name": "root2"
+    }
+  },
+  "requirements": [
+    {
+      "id": "Q1",
+      "description": "Share entry and same-note collaboration through the Share flow",
+      "status": "PASS",
+      "checks": [
+        "desktop-share-entry",
+        "mobile-share-entry",
+        "share-end-to-end-concurrent-editing",
+        "collaborator-same-document"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q2",
+      "description": "Login return, failed-login retry, and permission change during login",
+      "status": "PASS",
+      "checks": [
+        "guest-login-prompt-auto-opens",
+        "login-retry-returns-original-note",
+        "login-revocation-during-auth"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q3",
+      "description": "Server account display names on remote cursors",
+      "status": "PASS",
+      "checks": [
+        "owner-sees-remote-account-name",
+        "remote-owner-profile-name"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q4",
+      "description": "Remote cursor labels only; local cursor unchanged",
+      "status": "PASS",
+      "checks": [
+        "owner-sees-remote-account-name",
+        "collaborator-no-self-label"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q5",
+      "description": "Distinct account colors, stable during active collaboration",
+      "status": "PASS",
+      "checks": [
+        "owner-sees-stable-color-after-reconnect",
+        "different-account-cursor-colors",
+        "active-session-color-reconnect-stability"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q6",
+      "description": "Owner-only Share enable and stop controls",
+      "status": "PASS",
+      "checks": [
+        "share-owner-controls",
+        "nonowner-direct-permission-event-rejected"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q7",
+      "description": "Stop sharing revokes HTTP, API and active socket access",
+      "status": "PASS",
+      "checks": [
+        "share-owner-controls",
+        "share-stop-revokes-live-collaborator",
+        "owner-room-survives-revocation",
+        "collaborator-live-editing-stopped",
+        "revoked-socket-content-and-operation-denial",
+        "collaborator-download-denied-after-revoke",
+        "old-link-denied-while-private",
+        "login-revocation-during-auth",
+        "private-note-api-rejects-nonowner-update"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q8",
+      "description": "Explicit enable separate from copy; confirmed results and failure handling",
+      "status": "PASS",
+      "checks": [
+        "desktop-share-entry",
+        "share-owner-controls",
+        "share-copy-no-permission-change",
+        "share-clipboard-fallback",
+        "share-permission-save-confirmation"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q9",
+      "description": "Online inactive cursor and name remain visible with reduced opacity",
+      "status": "PASS",
+      "checks": [
+        "remote-blur-keeps-dimmed-cursor",
+        "blurred-collaborator-stays-dimmed",
+        "idle-and-new-join-cursor-state"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q10",
+      "description": "Same-name account disambiguation and collision handling",
+      "status": "PASS",
+      "checks": [
+        "same-name-disambiguation-fixtures"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q11",
+      "description": "Every enabled authentication provider returns correctly",
+      "status": "PASS",
+      "checks": [
+        "login-retry-returns-original-note",
+        "fresh-registration-returns-to-note",
+        "enabled-auth-provider-return-coverage"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q12",
+      "description": "Same link is denied while stopped and restored after enable",
+      "status": "PASS",
+      "checks": [
+        "share-stop-revokes-live-collaborator",
+        "share-stop-and-reenable-same-link",
+        "old-link-denied-while-private",
+        "old-link-rejoins-same-document"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q13",
+      "description": "Registration and login preserve the shared note destination",
+      "status": "PASS",
+      "checks": [
+        "registration-retry-preserves-destination",
+        "fresh-registration-returns-to-note"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "Q14",
+      "description": "Local unconfirmed edits can be recovered after immediate revocation without replay",
+      "status": "PASS",
+      "checks": [
+        "recover-unconfirmed-local-changes",
+        "unconfirmed-edit-export-and-no-replay"
+      ],
+      "reason": "All required feature checks passed."
+    },
+    {
+      "id": "CURSOR",
+      "description": "Remote names stay visible above their cursor for more than two seconds",
+      "status": "PASS",
+      "checks": [
+        "remote-label-persists",
+        "remote-label-above-cursor"
+      ],
+      "reason": "All required feature checks passed."
+    }
+  ],
+  "checks": [
+    {
+      "id": "desktop-share-entry",
+      "requirements": [
+        "Q1",
+        "Q8",
+        "desktop-entry"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-desktop-header.png",
+        "shareEntries": 1,
+        "order": "Publish, Share, Menu"
+      }
+    },
+    {
+      "id": "mobile-share-entry",
+      "requirements": [
+        "Q1",
+        "mobile-entry"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-mobile-menu.png",
+        "dialog": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-mobile-share-modal.png",
+        "state": {
+          "url": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ?both",
+          "scope": [
+            "freely"
+          ],
+          "enable": true,
+          "stop": true,
+          "ownerControls": true
+        }
+      }
+    },
+    {
+      "id": "share-owner-controls",
+      "requirements": [
+        "Q6",
+        "Q7",
+        "Q8"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "initial": {
+          "url": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ?both",
+          "scope": [
+            "freely"
+          ],
+          "enable": true,
+          "stop": true,
+          "ownerControls": true
+        },
+        "stoppedStatus": "已停止分享。",
+        "after": {
+          "url": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ?both",
+          "scope": [
+            "private"
+          ],
+          "enable": true,
+          "stop": false,
+          "ownerControls": true
+        },
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-stopped.png"
+      }
+    },
+    {
+      "id": "share-copy-no-permission-change",
+      "requirements": [
+        "Q8"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "clipboard": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ?both",
+        "otherAccountStatus": 403,
+        "permission": "private",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-copied-private.png"
+      }
+    },
+    {
+      "id": "share-clipboard-fallback",
+      "requirements": [
+        "copy-failure"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "status": "複製失敗，已選取連結，請手動複製。",
+        "selection": {
+          "focused": true,
+          "start": 0,
+          "end": 49,
+          "length": 49
+        },
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-copy-failed.png"
+      }
+    },
+    {
+      "id": "share-permission-save-confirmation",
+      "requirements": [
+        "permission-confirmation",
+        "Q8"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "saving": "正在儲存分享設定…",
+        "unconfirmed": "尚未確認，請重新確認目前權限後再操作。",
+        "enabled": "已啟用共同編輯。",
+        "screenshots": [
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-unconfirmed.png",
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-enabled.png"
+        ]
+      }
+    },
+    {
+      "id": "share-end-to-end-concurrent-editing",
+      "requirements": [
+        "Q1",
+        "simultaneous-editing"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "paragraph": "collab-concurrent-2026-10-19T05-53-22-454Z-e72724 sharing-fixture-2026-10-19T05-53-22-454Z-e72724 owner-concurrent-2026-10-19T05-53-22-454Z-e72724",
+        "converged": true,
+        "savedMatches": true,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-concurrent-converged.png"
+      }
+    },
+    {
+      "id": "owner-receives-collaborator-edit",
+      "requirements": [
+        "simultaneous-editing"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "ownerMarker": "owner-edit-2026-10-19T05-53-22-454Z-e72724",
+        "collaboratorMarker": "\nCollaborator 2026-10-19T05-53-22-454Z-e72724\n",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-converged-edits.png"
+      }
+    },
+    {
+      "id": "owner-sees-remote-account-name",
+      "requirements": [
+        "Q3",
+        "Q4",
+        "remote-cursor-name"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "cursor": {
+          "name": "root2",
+          "visible": true,
+          "opacity": 1,
+          "tagVisible": true,
+          "color": "rgb(30, 136, 229)"
+        },
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-remote-cursor.png"
+      }
+    },
+    {
+      "id": "remote-blur-keeps-dimmed-cursor",
+      "requirements": [
+        "Q9"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "before": {
+          "name": "root2",
+          "visible": true,
+          "opacity": 1,
+          "tagVisible": true,
+          "color": "rgb(30, 136, 229)"
+        },
+        "after": {
+          "name": "root2",
+          "visible": true,
+          "opacity": 0.45,
+          "tagVisible": true,
+          "color": "rgb(30, 136, 229)"
+        },
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-remote-cursor-blurred.png"
+      }
+    },
+    {
+      "id": "owner-sees-stable-color-after-reconnect",
+      "requirements": [
+        "Q5"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "before": "rgb(30, 136, 229)",
+        "after": "rgb(30, 136, 229)",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-color-after-reconnect.png"
+      }
+    },
+    {
+      "id": "share-stop-revokes-live-collaborator",
+      "requirements": [
+        "Q7",
+        "Q12"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "status": "已停止分享。",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-share-stop-live.png"
+      }
+    },
+    {
+      "id": "owner-room-survives-revocation",
+      "requirements": [
+        "Q7",
+        "owner-room-survives-http-reload"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "remoteCursorRemoved": true,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-after-revocation.png"
+      }
+    },
+    {
+      "id": "share-stop-and-reenable-same-link",
+      "requirements": [
+        "Q12"
+      ],
+      "lane": "feature",
+      "actor": "owner",
+      "status": "PASS",
+      "details": {
+        "status": "已啟用共同編輯。",
+        "link": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ?both",
+        "oldLinkDeniedWhileStopped": 403,
+        "notes": 1,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/owner/owner-reenabled.png"
+      }
+    },
+    {
+      "id": "collaborator-same-document",
+      "requirements": [
+        "Q1"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "noteURL": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ",
+        "initialMarkerObserved": true
+      }
+    },
+    {
+      "id": "nonowner-direct-permission-event-rejected",
+      "requirements": [
+        "Q6"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "acknowledgement": {
+          "ok": false,
+          "code": "forbidden"
+        },
+        "stillShared": true
+      }
+    },
+    {
+      "id": "owner-edits-arrive-at-collaborator",
+      "requirements": [
+        "simultaneous-editing"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "marker": "owner-edit-2026-10-19T05-53-22-454Z-e72724"
+      }
+    },
+    {
+      "id": "remote-owner-profile-name",
+      "requirements": [
+        "Q3"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "cursors": [
+          {
+            "clientId": "imSOOyjkFM2tddoOAABd",
+            "name": "root1",
+            "cursor": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tag": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tagBounds": {
+              "top": 269.5,
+              "bottom": 288.5,
+              "left": 554,
+              "right": 628.234375
+            },
+            "barBounds": {
+              "top": 288.5,
+              "bottom": 310.5,
+              "left": 557,
+              "right": 559
+            },
+            "color": "rgb(229, 57, 53)"
+          }
+        ],
+        "participants": [
+          {
+            "name": "root2",
+            "color": "rgb(30, 136, 229)",
+            "colorSource": "participant-border"
+          },
+          {
+            "name": "root1",
+            "color": "rgb(229, 57, 53)",
+            "colorSource": "participant-border"
+          }
+        ]
+      }
+    },
+    {
+      "id": "collaborator-no-self-label",
+      "requirements": [
+        "Q4"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "cursors": [
+          {
+            "clientId": "imSOOyjkFM2tddoOAABd",
+            "name": "root1",
+            "cursor": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tag": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tagBounds": {
+              "top": 269.5,
+              "bottom": 288.5,
+              "left": 554,
+              "right": 628.234375
+            },
+            "barBounds": {
+              "top": 288.5,
+              "bottom": 310.5,
+              "left": 557,
+              "right": 559
+            },
+            "color": "rgb(229, 57, 53)"
+          }
+        ],
+        "participants": [
+          {
+            "name": "root2",
+            "color": "rgb(30, 136, 229)",
+            "colorSource": "participant-border"
+          },
+          {
+            "name": "root1",
+            "color": "rgb(229, 57, 53)",
+            "colorSource": "participant-border"
+          }
+        ]
+      }
+    },
+    {
+      "id": "different-account-cursor-colors",
+      "requirements": [
+        "Q5"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "localColor": "rgb(30, 136, 229)",
+        "remoteColor": "rgb(229, 57, 53)",
+        "cursorColor": "rgb(229, 57, 53)"
+      }
+    },
+    {
+      "id": "remote-label-persists",
+      "requirements": [
+        "persistent-name"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "cursors": [
+          {
+            "clientId": "imSOOyjkFM2tddoOAABd",
+            "name": "root1",
+            "cursor": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tag": {
+              "visible": true,
+              "opacity": 1
+            },
+            "tagBounds": {
+              "top": 269.5,
+              "bottom": 288.5,
+              "left": 554,
+              "right": 628.234375
+            },
+            "barBounds": {
+              "top": 288.5,
+              "bottom": 310.5,
+              "left": 557,
+              "right": 559
+            },
+            "color": "rgb(229, 57, 53)"
+          }
+        ],
+        "participants": [
+          {
+            "name": "root2",
+            "color": "rgb(30, 136, 229)",
+            "colorSource": "participant-border"
+          },
+          {
+            "name": "root1",
+            "color": "rgb(229, 57, 53)",
+            "colorSource": "participant-border"
+          }
+        ]
+      }
+    },
+    {
+      "id": "remote-label-above-cursor",
+      "requirements": [
+        "name-above-cursor"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "clientId": "imSOOyjkFM2tddoOAABd",
+        "name": "root1",
+        "cursor": {
+          "visible": true,
+          "opacity": 1
+        },
+        "tag": {
+          "visible": true,
+          "opacity": 1
+        },
+        "tagBounds": {
+          "top": 269.5,
+          "bottom": 288.5,
+          "left": 554,
+          "right": 628.234375
+        },
+        "barBounds": {
+          "top": 288.5,
+          "bottom": 310.5,
+          "left": 557,
+          "right": 559
+        },
+        "color": "rgb(229, 57, 53)"
+      }
+    },
+    {
+      "id": "blurred-collaborator-stays-dimmed",
+      "requirements": [
+        "Q9"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "visible": true,
+        "tagVisible": true,
+        "opacity": 0.45,
+        "beforeOpacity": 1,
+        "color": "rgb(30, 136, 229)"
+      }
+    },
+    {
+      "id": "active-session-color-reconnect-stability",
+      "requirements": [
+        "Q5"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "before": {
+          "self": "rgb(30, 136, 229)",
+          "remote": "rgb(229, 57, 53)",
+          "cursor": "rgb(229, 57, 53)"
+        },
+        "after": {
+          "self": "rgb(30, 136, 229)",
+          "remote": "rgb(229, 57, 53)",
+          "cursor": "rgb(229, 57, 53)"
+        },
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/collaborator/collaborator-color-after-reconnect.png"
+      }
+    },
+    {
+      "id": "recover-unconfirmed-local-changes",
+      "requirements": [
+        "Q14"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "changes": "\nunconfirmed-local-2026-10-19T05-53-22-454Z-e72724",
+        "downloadName": "Sharing verification 2026-10-19T05-53-22-454Z-e72724-unconfirmed.md",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/collaborator/collaborator-revoked-recovery.png"
+      }
+    },
+    {
+      "id": "collaborator-live-editing-stopped",
+      "requirements": [
+        "Q7"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "readOnly": true,
+        "eventsSentAfterRevocation": []
+      }
+    },
+    {
+      "id": "revoked-socket-content-and-operation-denial",
+      "requirements": [
+        "Q7"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "revokedEvents": [
+          "info"
+        ],
+        "retryEvents": [
+          "info"
+        ],
+        "attemptedAfterRevoke": [
+          "get_operations",
+          "operation"
+        ]
+      }
+    },
+    {
+      "id": "collaborator-download-denied-after-revoke",
+      "requirements": [
+        "Q7"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "status": 403
+      }
+    },
+    {
+      "id": "old-link-denied-while-private",
+      "requirements": [
+        "Q7",
+        "Q12"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "status": 403,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/collaborator/collaborator-old-link-denied.png"
+      }
+    },
+    {
+      "id": "old-link-rejoins-same-document",
+      "requirements": [
+        "Q12"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "noteURL": "http://localhost:3000/JoH9OomWRgeELhvaaMxqgQ",
+        "currentServerTextLoaded": true,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/collaborator/collaborator-old-link-rejoined.png"
+      }
+    },
+    {
+      "id": "unconfirmed-edit-export-and-no-replay",
+      "requirements": [
+        "Q14"
+      ],
+      "lane": "feature",
+      "actor": "collaborator",
+      "status": "PASS",
+      "details": {
+        "replayed": false
+      }
+    },
+    {
+      "id": "guest-login-prompt-auto-opens",
+      "requirements": [
+        "Q2"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "next": "/JoH9OomWRgeELhvaaMxqgQ?both",
+        "providers": [
+          "email"
+        ],
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/guest-login-prompt.png"
+      }
+    },
+    {
+      "id": "login-retry-returns-original-note",
+      "requirements": [
+        "Q2",
+        "Q11"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "retryPrompt": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/login-failed-retry-prompt.png",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/login-retry-return.png"
+      }
+    },
+    {
+      "id": "login-revocation-during-auth",
+      "requirements": [
+        "Q2",
+        "Q7"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "returnedTo": "/JoH9OomWRgeELhvaaMxqgQ",
+        "status": 403,
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/login-after-revocation.png"
+      }
+    },
+    {
+      "id": "registration-retry-preserves-destination",
+      "requirements": [
+        "Q13"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "rejected": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/registration-duplicate-rejected.png",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/registration-retry-return.png",
+        "newAccountCreated": false
+      }
+    },
+    {
+      "id": "fresh-registration-returns-to-note",
+      "requirements": [
+        "Q13",
+        "Q11"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "account": "root1",
+        "registeredEvidence": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/fresh-registration-signin.png",
+        "screenshot": "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/fresh-registration-note.png"
+      }
+    },
+    {
+      "id": "same-name-disambiguation-fixtures",
+      "requirements": [
+        "Q10"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "ownerLabel": "root1 · F6A9",
+        "temporaryLabel": "root1 · 7180",
+        "ownerView": {
+          "participants": [
+            "root1 · F6A9",
+            "root1 · 7180"
+          ],
+          "cursors": [
+            "root1 · 7180"
+          ]
+        },
+        "tempView": {
+          "participants": [
+            "root1 · 7180",
+            "root1 · F6A9"
+          ],
+          "cursors": [
+            "root1 · F6A9"
+          ]
+        },
+        "sameAccountTabs": [
+          "root1 · 7180",
+          "root1 · F6A9"
+        ],
+        "screenshots": [
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/same-name-owner-view.png",
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/same-name-two-owner-tabs.png"
+        ]
+      }
+    },
+    {
+      "id": "idle-and-new-join-cursor-state",
+      "requirements": [
+        "Q9"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "active": {
+          "name": "root1 · 7180",
+          "opacity": 1,
+          "tagVisible": true
+        },
+        "idle": {
+          "name": "root1 · 7180",
+          "opacity": 0.45,
+          "tagVisible": true
+        },
+        "newJoin": {
+          "name": "root1 · 7180",
+          "opacity": 0.45,
+          "tagVisible": true
+        },
+        "screenshots": [
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/idle-collaborator-dimmed.png",
+          "output/playwright/sharing-collaborative-editing/2026-10-19T05-53-22-454Z-e72724/coordinator/new-join-sees-idle-collaborator.png"
+        ]
+      }
+    },
+    {
+      "id": "enabled-auth-provider-return-coverage",
+      "requirements": [
+        "Q11"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "enabledProviders": [
+          "email"
+        ],
+        "exercised": {
+          "email": [
+            "login-retry-returns-original-note",
+            "fresh-registration-returns-to-note",
+            "registration-retry-preserves-destination"
+          ]
+        }
+      }
+    },
+    {
+      "id": "private-note-api-rejects-nonowner-update",
+      "requirements": [
+        "Q7"
+      ],
+      "lane": "feature",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "status": 403,
+        "contentUnchanged": true
+      }
+    },
+    {
+      "id": "cleanup-temporary-account",
+      "requirements": [],
+      "lane": "cleanup",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "deleted": true,
+        "loginStatus": 302
+      }
+    },
+    {
+      "id": "cleanup-dedicated-fixture",
+      "requirements": [],
+      "lane": "cleanup",
+      "actor": "coordinator",
+      "status": "PASS",
+      "details": {
+        "deletedOnlyVerifiedFixture": true,
+        "notePath": "/JoH9OomWRgeELhvaaMxqgQ"
+      }
+    }
+  ],
+  "totals": {
+    "PASS": 42,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

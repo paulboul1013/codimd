@@ -1,0 +1,16 @@
+{
+  "runId": "2026-10-19T05-53-22-454Z-e72724",
+  "baseURL": "http://localhost:3000",
+  "accounts": {
+    "owner": {
+      "id": "f6a9a6b3-cc9e-48b0-8a94-645387ac6bcf",
+      "name": "root1"
+    },
+    "collaborator": {
+      "id": "3b626bea-0bdb-4969-b6db-23b5ac3dbbcf",
+      "name": "root2"
+    }
+  },
+  "browserVersion": "143.0.7499.4",
+  "nodeVersion": "v16.20.2"
+}

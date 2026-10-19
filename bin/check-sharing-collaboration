@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+"""Run the sharing verifier with the repository's Node.js version."""
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+
+root = Path(__file__).resolve().parents[1]
+candidates = [
+    os.environ.get('CODIMD_NODE_BINARY'),
+    str(Path.home() / '.nvm/versions/node/v16.20.2/bin/node'),
+    str(Path.home() / '.cache/codimd-manual-test/node-v16.20.2-linux-x64/bin/node'),
+    shutil.which('node'),
+]
+for candidate in filter(None, candidates):
+    if Path(candidate).is_file():
+        version = subprocess.check_output([candidate, '--version'], text=True).strip()
+        if version == 'v16.20.2':
+            os.chdir(root)
+            os.execv(candidate, [candidate, str(root / 'bin/check-sharing-collaboration.js'), *sys.argv[1:]])
+sys.exit('Node v16.20.2 is required. Set CODIMD_NODE_BINARY to its executable path.')

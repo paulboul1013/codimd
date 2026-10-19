@@ -1,0 +1,10 @@
+ account_count | authorized_test_accounts | original_accounts | remaining_temporary_accounts 
+---------------+--------------------------+-------------------+------------------------------
+             4 |                        2 |                 2 |                            0
+(1 row)
+
+ remaining_verifier_notes 
+--------------------------
+                        0
+(1 row)
+
