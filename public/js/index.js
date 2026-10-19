@@ -79,6 +79,8 @@ import Editor from './lib/editor'
 import getUIElements from './lib/editor/ui-elements'
 import { emojifyImageDir } from './lib/editor/constants'
 import modeType from './lib/modeType'
+import setupShareNote from './lib/share-note'
+import { collectPendingChanges, showRevokedPanel } from './lib/collaboration-recovery'
 import appState from './lib/appState'
 
 require('../vendor/showup/showup')
@@ -1616,6 +1618,7 @@ function updatePermission (newPermission) {
     if (window.loaded) refreshView()
   }
   ui.infobar.permission.label.hide()
+  shareNote.render()
   switch (permission) {
     case 'freely':
       $('#permissionLabelFreely').show()
@@ -1693,11 +1696,68 @@ var emit = socket.emit
 socket.emit = function () {
   if (!checkLoginStateChanged() && !needRefresh) { emit.apply(socket, arguments) }
 }
+
+function isNoteOwner () {
+  return !!(personalInfo.userid && window.owner && personalInfo.userid === window.owner)
+}
+
+// Resolves with the server's confirmation; a missing reply is reported, never assumed.
+function requestPermissionChange (target) {
+  return new Promise(resolve => {
+    let settled = false
+    const timer = setTimeout(() => {
+      settled = true
+      resolve({ ok: false, code: 'timeout' })
+    }, 10000)
+    socket.emit('permission', target, result => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      if (result && result.ok) updatePermission(result.permission)
+      resolve(result || { ok: false, code: 'unknown' })
+    })
+  })
+}
+
+var shareNote = setupShareNote({
+  modal: $('#shareModal'),
+  getEditorUrl: () => noteurl + '?both',
+  getContext: () => ({ permission, isOwner: isNoteOwner(), connected: socket.connected }),
+  changePermission: requestPermissionChange
+})
+
+var accessRevoked = false
+
+// Stop syncing first, keep the unconfirmed local edits, then hide the note content.
+function handleAccessRevoked () {
+  if (accessRevoked) return
+  accessRevoked = true
+  needRefresh = true
+  const pending = collectPendingChanges(cmClient, editor.getValue())
+  const filename = (renderFilename(ui.area.markdown) || 'note') + '-unconfirmed.md'
+  if (cmClient) cmClient.editorAdapter.detach()
+  socket.disconnect()
+  clearInterval(retryTimer)
+  editor.setOption('readOnly', true)
+  editor.swapDoc(CodeMirror.Doc(''))
+  ui.area.markdown.html('')
+  $('.CodeMirror-other-cursors').empty()
+  $('#shareModal').modal('hide')
+  ui.content.hide()
+  showStatus(statusType.offline)
+  showRevokedPanel($('.revoked-panel'), pending, filename)
+  if (pending.hasChanges) {
+    window.onbeforeunload = () => 'unconfirmed changes'
+    $('.ui-revoked-copy, .ui-revoked-download').on('click', () => { window.onbeforeunload = null })
+  }
+}
+
 socket.on('info', function (data) {
   console.error(data)
   switch (data.code) {
     case 403:
-      location.href = serverurl + '/403'
+      if (window.loaded) handleAccessRevoked()
+      else location.href = serverurl + '/403'
       break
     case 404:
       location.href = serverurl + '/404'
@@ -1730,6 +1790,7 @@ socket.on('maintenance', function () {
 })
 socket.on('disconnect', function (data) {
   showStatus(statusType.offline)
+  shareNote.render()
   if (window.loaded) {
     saveInfo()
     lastInfo.history = editor.getHistory()
@@ -1752,6 +1813,7 @@ socket.on('connect', function (data) {
   retryTimer = null
   personalInfo.id = socket.id
   showStatus(statusType.connected)
+  shareNote.render()
   socket.emit('version')
 })
 socket.on('version', function (data) {
@@ -2117,7 +2179,7 @@ socket.on('online users', function (data) {
     var found = false
     for (var i = 0; i < data.users.length; i++) {
       var user = data.users[i]
-      if ($(this).attr('id') === user.id) { found = true }
+      if ($(this).attr('data-clientid') === String(user.id)) { found = true }
     }
     if (!found) {
       $(this).stop(true).fadeOut('normal', function () {
@@ -2148,11 +2210,6 @@ socket.on('cursor focus', function (data) {
     }
   }
   if (data.id !== socket.id) { buildCursor(data) }
-  // force show
-  var cursor = $('div[data-clientid="' + data.id + '"]')
-  if (cursor.length > 0) {
-    cursor.stop(true).fadeIn()
-  }
 })
 socket.on('cursor activity', function (data) {
   if (debug) { console.debug(data) }
@@ -2167,15 +2224,11 @@ socket.on('cursor blur', function (data) {
   if (debug) { console.debug(data) }
   for (var i = 0; i < onlineUsers.length; i++) {
     if (onlineUsers[i].id === data.id) {
-      onlineUsers[i].cursor = null
+      onlineUsers[i].blur = true
     }
   }
+  // the last position stays visible, dimmed, while the user is still online
   if (data.id !== socket.id) { buildCursor(data) }
-  // force hide
-  var cursor = $('div[data-clientid="' + data.id + '"]')
-  if (cursor.length > 0) {
-    cursor.stop(true).fadeOut()
-  }
 })
 
 var options = {
@@ -2340,42 +2393,50 @@ function emitUserStatus (force) {
   }
 }
 
+// Remote names sit above the cursor; they move below only when the top edge has no room.
 function checkCursorTag (coord, ele) {
   if (!ele) return // return if element not exists
-  // set margin
   var tagRightMargin = 0
-  var tagBottomMargin = 2
+  var tagTopMargin = 2
   // use sizer to get the real doc size (won't count status bar and gutters)
   var docWidth = ui.area.codemirrorSizer.width()
-  // get editor size (status bar not count in)
-  var editorHeight = ui.area.codemirror.height()
-  // get element size
   var width = ele.outerWidth()
   var height = ele.outerHeight()
   var padding = (ele.outerWidth() - ele.width()) / 2
-  // get coord position
   var left = coord.left
   var top = coord.top
   // get doc top offset (to workaround with viewport)
   var docTopOffset = ui.area.codemirrorSizerInner.position().top
-  // set offset
   var offsetLeft = -3
-  var offsetTop = defaultTextHeight
-  // only do when have width and height
+  var offsetTop = -height
+  var below = false
   if (width > 0 && height > 0) {
     // flip x when element right bound larger than doc width
     if (left + width + offsetLeft + tagRightMargin > docWidth) {
       offsetLeft = -(width + tagRightMargin) + padding + offsetLeft
     }
-    // flip y when element bottom bound larger than doc height
-    // and element top position is larger than element height
-    if (top + docTopOffset + height + offsetTop + tagBottomMargin > Math.max(editor.doc.height, editorHeight) && top + docTopOffset > height + tagBottomMargin) {
-      offsetTop = -(height)
+    if (top + docTopOffset < height + tagTopMargin) {
+      offsetTop = defaultTextHeight
+      below = true
     }
   }
-  // set position
+  ele.toggleClass('cursortag-below', below)
   ele[0].style.left = offsetLeft + 'px'
   ele[0].style.top = offsetTop + 'px'
+}
+
+function cursorIconClass (type) {
+  switch (type) {
+    case 'xs':
+      return 'fa-mobile'
+    case 'sm':
+      return 'fa-tablet'
+    case 'md':
+    case 'lg':
+      return 'fa-desktop'
+    default:
+      return 'fa-user'
+  }
 }
 
 function buildCursor (user) {
@@ -2384,119 +2445,41 @@ function buildCursor (user) {
   var coord = editor.charCoords(user.cursor, 'windows')
   coord.left = coord.left < 4 ? 4 : coord.left
   coord.top = coord.top < 0 ? 0 : coord.top
-  var iconClass = 'fa-user'
-  switch (user.type) {
-    case 'xs':
-      iconClass = 'fa-mobile'
-      break
-    case 'sm':
-      iconClass = 'fa-tablet'
-      break
-    case 'md':
-      iconClass = 'fa-desktop'
-      break
-    case 'lg':
-      iconClass = 'fa-desktop'
-      break
-  }
-  if ($('div[data-clientid="' + user.id + '"]').length <= 0) {
-    const cursor = $('<div data-clientid="' + user.id + '" class="CodeMirror-other-cursor" style="display:none;"></div>')
-    cursor.attr('data-line', user.cursor.line)
-    cursor.attr('data-ch', user.cursor.ch)
-    cursor.attr('data-offset-left', 0)
-    cursor.attr('data-offset-top', 0)
-
-    const cursorbar = $('<div class="cursorbar">&nbsp;</div>')
-    cursorbar[0].style.height = defaultTextHeight + 'px'
-    cursorbar[0].style.borderLeft = '2px solid ' + user.color
-
-    var icon = '<i class="fa ' + iconClass + '"></i>'
-
-    const cursortag = $('<div class="cursortag">' + icon + '&nbsp;<span class="name">' + user.name + '</span></div>')
-    // cursortag[0].style.background = color;
-    cursortag[0].style.color = user.color
-
-    cursor.attr('data-mode', 'hover')
-    cursortag.delay(2000).fadeOut('fast')
-    cursor.hover(
-      function () {
-        if (cursor.attr('data-mode') === 'hover') { cursortag.stop(true).fadeIn('fast') }
-      },
-      function () {
-        if (cursor.attr('data-mode') === 'hover') { cursortag.stop(true).fadeOut('fast') }
-      })
-
-    var hideCursorTagDelay = 2000
-    var hideCursorTagTimer = null
-
-    var switchMode = function (ele) {
-      if (ele.attr('data-mode') === 'state') { ele.attr('data-mode', 'hover') } else if (ele.attr('data-mode') === 'hover') { ele.attr('data-mode', 'state') }
-    }
-
-    var switchTag = function (ele) {
-      if (ele.css('display') === 'none') { ele.stop(true).fadeIn('fast') } else { ele.stop(true).fadeOut('fast') }
-    }
-
-    var hideCursorTag = function () {
-      if (cursor.attr('data-mode') === 'hover') { cursortag.fadeOut('fast') }
-    }
-    cursor.on('touchstart', function (e) {
-      var display = cursortag.css('display')
-      cursortag.stop(true).fadeIn('fast')
-      clearTimeout(hideCursorTagTimer)
-      hideCursorTagTimer = setTimeout(hideCursorTag, hideCursorTagDelay)
-      if (display === 'none') {
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    })
-    cursortag.on('mousedown touchstart', function (e) {
-      if (cursor.attr('data-mode') === 'state') { switchTag(cursortag) }
-      switchMode(cursor)
-      e.preventDefault()
-      e.stopPropagation()
-    })
-
-    cursor.append(cursorbar)
+  var cursor = $('div[data-clientid="' + user.id + '"]')
+  var isNew = cursor.length <= 0
+  if (isNew) {
+    cursor = $('<div class="CodeMirror-other-cursor"></div>').attr('data-clientid', user.id)
+    cursor.append($('<div class="cursorbar">&nbsp;</div>'))
+    var cursortag = $('<div class="cursortag"><i class="fa"></i>&nbsp;<span class="name"></span></div>')
     cursor.append(cursortag)
-
+    $('.CodeMirror-other-cursors').append(cursor)
+  }
+  cursor.attr('data-line', user.cursor.line)
+  cursor.attr('data-ch', user.cursor.ch)
+  var cursorbar = cursor.find('.cursorbar')
+  cursorbar[0].style.height = defaultTextHeight + 'px'
+  cursorbar[0].style.borderLeft = '2px solid ' + user.color
+  var tag = cursor.find('.cursortag')
+  tag[0].style.color = user.color
+  tag.find('i').removeClass().addClass('fa').addClass(cursorIconClass(user.type))
+  tag.find('.name').text(user.name)
+  tag.attr('title', user.name)
+  // online but not typing here: keep the last position and name, dimmed
+  cursor.toggleClass('CodeMirror-other-cursor-inactive', !!(user.blur || user.idle))
+  cursor.stop(true).show()
+  if (isNew || cursor.css('display') === 'none') {
     cursor[0].style.left = coord.left + 'px'
     cursor[0].style.top = coord.top + 'px'
-    $('.CodeMirror-other-cursors').append(cursor)
-
-    if (!user.idle) { cursor.stop(true).fadeIn() }
-
-    checkCursorTag(coord, cursortag)
   } else {
-    const cursor = $('div[data-clientid="' + user.id + '"]')
-    cursor.attr('data-line', user.cursor.line)
-    cursor.attr('data-ch', user.cursor.ch)
-
-    const cursorbar = cursor.find('.cursorbar')
-    cursorbar[0].style.height = defaultTextHeight + 'px'
-    cursorbar[0].style.borderLeft = '2px solid ' + user.color
-
-    const cursortag = cursor.find('.cursortag')
-    cursortag.find('i').removeClass().addClass('fa').addClass(iconClass)
-    cursortag.find('.name').text(user.name)
-
-    if (cursor.css('display') === 'none') {
-      cursor[0].style.left = coord.left + 'px'
-      cursor[0].style.top = coord.top + 'px'
-    } else {
-      cursor.animate({
-        left: coord.left,
-        top: coord.top
-      }, {
-        duration: cursorAnimatePeriod,
-        queue: false
-      })
-    }
-
-    if (user.idle && cursor.css('display') !== 'none') { cursor.stop(true).fadeOut() } else if (!user.idle && cursor.css('display') === 'none') { cursor.stop(true).fadeIn() }
-
-    checkCursorTag(coord, cursortag)
+    cursor.animate({
+      left: coord.left,
+      top: coord.top
+    }, {
+      duration: cursorAnimatePeriod,
+      queue: false
+    })
   }
+  checkCursorTag(coord, tag)
 }
 
 // editor actions

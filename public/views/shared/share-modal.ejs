@@ -1,0 +1,50 @@
+<!-- share modal -->
+<div class="modal fade share-modal" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="shareModalLabel"><i class="fa fa-users"></i> <%= __('Collaborative editing') %></h4>
+            </div>
+            <div class="modal-body">
+                <label for="shareModalUrl"><%= __('Editing link') %></label>
+                <div class="input-group">
+                    <input type="text" class="form-control ui-share-url" id="shareModalUrl" readonly>
+                    <span class="input-group-btn">
+                        <button type="button" class="btn btn-default ui-share-copy"><i class="fa fa-clipboard"></i> <%= __('Copy editing link') %></button>
+                    </span>
+                </div>
+                <p class="help-block ui-share-copy-status" role="status" aria-live="polite"></p>
+                <div class="share-scope">
+                    <p data-permission="limited"><%= __('Everyone who is signed in and has this link can view and edit.') %></p>
+                    <p data-permission="freely"><%= __('Anyone with this link, including guests, can view and edit.') %></p>
+                    <p data-permission="editable"><%= __('Anyone with this link can view. Signed-in people can edit.') %></p>
+                    <p data-permission="locked"><%= __('Anyone with this link can view. Only the owner can edit.') %></p>
+                    <p data-permission="protected"><%= __('Signed-in people can view. Only the owner can edit.') %></p>
+                    <p data-permission="private"><%= __('Only the owner can open this note. Other accounts cannot edit together.') %></p>
+                </div>
+                <div class="ui-share-owner-controls">
+                    <p class="text-muted ui-share-enable-hint"><%= __('Enabling lets everyone who is signed in and has this link view and edit. Guests lose access.') %></p>
+                    <button type="button" class="btn btn-primary ui-share-enable"><%= __('Enable collaborative editing for signed-in people') %></button>
+                    <p class="text-muted ui-share-stop-hint"><%= __('Stopping makes this note private. Other accounts immediately lose view and edit access.') %></p>
+                    <button type="button" class="btn btn-danger ui-share-stop"><%= __('Stop sharing') %></button>
+                </div>
+                <p class="ui-share-status" role="status" aria-live="polite"></p>
+                <div class="ui-share-messages" hidden>
+                    <span data-message="saving"><%= __('Saving the sharing setting…') %></span>
+                    <span data-message="enabled"><%= __('Collaborative editing is enabled.') %></span>
+                    <span data-message="stopped"><%= __('Sharing has stopped.') %></span>
+                    <span data-message="failed"><%= __('The sharing setting was not saved. Try again.') %></span>
+                    <span data-message="unconfirmed"><%= __('The change is not confirmed yet. Check the current permission before trying again.') %></span>
+                    <span data-message="offline"><%= __('Offline. Sharing settings can be changed after reconnecting.') %></span>
+                    <span data-message="copied"><%= __('Editing link copied.') %></span>
+                    <span data-message="copy-failed"><%= __('Copy failed. The link is selected; copy it manually.') %></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><%= __('Close') %></button>
+            </div>
+        </div>
+    </div>
+</div>

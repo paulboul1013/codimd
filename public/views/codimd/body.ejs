@@ -259,6 +259,23 @@
 </div>
 <%- include('../shared/refresh-modal') %>
 <%- include('../shared/signin-modal') %>
+<%- include('../shared/share-modal') %>
+<!-- shown when the owner stops sharing while this note is open -->
+<div class="revoked-panel" hidden role="alertdialog" aria-labelledby="revokedPanelTitle">
+    <div class="revoked-panel-body">
+        <h3 id="revokedPanelTitle"><i class="fa fa-ban"></i> <%= __('Sharing has stopped') %></h3>
+        <p><%= __('The owner stopped sharing this note. You no longer have access, and syncing has stopped.') %></p>
+        <div class="ui-revoked-recovery">
+            <p class="text-warning"><strong><%= __('Unconfirmed changes') %></strong> <%= __('These edits were not confirmed by the server. They may or may not have been saved. They will not be sent again.') %></p>
+            <textarea class="form-control ui-revoked-changes" rows="6" readonly></textarea>
+            <p class="text-muted ui-revoked-deleted"><%= __('Deleted characters not shown:') %> <span class="ui-revoked-deleted-count"></span></p>
+            <button type="button" class="btn btn-default ui-revoked-copy"><i class="fa fa-clipboard"></i> <%= __('Copy unconfirmed changes') %></button>
+            <button type="button" class="btn btn-default ui-revoked-download"><i class="fa fa-download"></i> <%= __('Download local version') %></button>
+            <p class="help-block ui-revoked-copy-status" role="status" aria-live="polite" data-copied="<%= __('Copied.') %>" data-failed="<%= __('Copy failed. The text is selected; copy it manually.') %>"></p>
+        </div>
+        <a class="btn btn-primary" href="<%- serverURL %>/"><%= __('Back to home') %></a>
+    </div>
+</div>
 <%- include('../shared/help-modal') %>
 <%- include('../shared/revision-modal') %>
 <%- include('../shared/pandoc-export-modal') %>
