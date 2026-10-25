@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodiMD</title>
+<style>body{font-family:system-ui,sans-serif;margin:3rem 1rem;text-align:center;color:#333}</style>
+</head>
+<body>
+<p id="status">正在連線到 CodiMD…</p>
+<script>
+// Keep the path after the repository segment: /codimd/abc -> <tunnel>/abc
+var rest = location.pathname.split('/').slice(2).join('/') + location.search + location.hash
+fetch('target.json?t=' + Date.now(), { cache: 'no-store' })
+  .then(function (r) { return r.json() })
+  .then(function (t) { location.replace(t.url + '/' + rest) })
+  .catch(function () {
+    document.getElementById('status').textContent = 'CodiMD 目前未上線。'
+  })
+</script>
+</body>
+</html>
