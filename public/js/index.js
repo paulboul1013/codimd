@@ -89,6 +89,7 @@ require('../css/index.css')
 require('../css/extra.css')
 require('../css/slide-preview.css')
 require('../css/site.css')
+require('../css/night-ui.css')
 require('spin.js/spin.css')
 
 require('highlight.js/styles/github-gist.css')
@@ -443,10 +444,14 @@ $(document).ready(function () {
       })
   }
 
-  // Re-enable nightmode
-  if (store.get('nightMode') || Cookies.get('nightMode')) {
+  // Night mode is the default; only a saved "off" turns it off
+  const savedNightMode = store.enabled ? store.get('nightMode') : Cookies.get('nightMode')
+  if (savedNightMode === false || savedNightMode === 'false') {
+    $body.removeClass('night')
+  } else {
     $body.addClass('night')
     ui.toolbar.night.addClass('active')
+    appState.nightMode = true
   }
 
   // showup

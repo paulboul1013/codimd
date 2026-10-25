@@ -1,0 +1,137 @@
+/*
+ * Night mode for the home page (history list, sign-in dialog, forms).
+ * index.css already covers the editor; these rules fill the gaps.
+ */
+
+.night .btn-default,
+.night .btn-default:focus {
+  color: #d4d4d8;
+  background-color: #3f3f46;
+  border-color: #52525b;
+}
+
+.night .btn-default:hover,
+.night .btn-default:active,
+.night .btn-default.active {
+  color: #fff;
+  background-color: #52525b;
+  border-color: #71717a;
+}
+
+.night .form-control,
+.night select,
+.night .select2-container-multi .select2-choices,
+.night .select2-container .select2-choice {
+  color: #d4d4d8;
+  background-color: #27272a;
+  background-image: none;
+  border-color: #52525b;
+}
+
+.night .form-control::placeholder {
+  color: #a1a1aa;
+}
+
+.night .select2-container-multi .select2-choices .select2-search-choice {
+  color: #d4d4d8;
+  background: #3f3f46;
+  border-color: #52525b;
+  box-shadow: none;
+}
+
+.night .select2-drop,
+.night .select2-results {
+  color: #d4d4d8;
+  background-color: #303036;
+  border-color: #52525b;
+}
+
+.night .select2-results .select2-highlighted {
+  background-color: #564dff;
+}
+
+.night .list li .item {
+  color: #d4d4d8;
+  background-color: #303036;
+  box-shadow: 0 0 0 1px #3f3f46;
+}
+
+.night .list li .item:hover {
+  background-color: #3f3f46;
+}
+
+.night .list li .item .content p,
+.night .list li .item .content .text-muted {
+  color: #a1a1aa;
+}
+
+.night .list li .item .content .tags span {
+  color: #d4d4d8;
+  background-color: #52525b;
+}
+
+.night .ui-history-close,
+.night .ui-history-pin {
+  color: #a1a1aa;
+}
+
+.night .pagination > li > a,
+.night .pagination > li > span {
+  color: #d4d4d8;
+  background-color: #303036;
+  border-color: #52525b;
+}
+
+.night .pagination > .active > a,
+.night .pagination > .active > span {
+  color: #fff;
+  background-color: #564dff;
+  border-color: #564dff;
+}
+
+.night .modal-content {
+  color: #d4d4d8;
+  background-color: #303036;
+  border-color: #52525b;
+  text-shadow: none;
+}
+
+.night .modal-header,
+.night .modal-footer {
+  border-color: #52525b;
+}
+
+.night .close {
+  color: #d4d4d8;
+  text-shadow: none;
+  opacity: 0.8;
+}
+
+.night .dropdown-menu {
+  background-color: #303036;
+  border-color: #52525b;
+}
+
+.night .dropdown-menu > li > a {
+  color: #d4d4d8;
+}
+
+.night .dropdown-menu > li > a:hover,
+.night .dropdown-menu > li > a:focus {
+  color: #fff;
+  background-color: #3f3f46;
+}
+
+.night .dropdown-menu .divider {
+  background-color: #52525b;
+}
+
+/* Error pages (error.ejs) */
+
+.night .vertical-center-row h1 {
+  color: #d4d4d8;
+}
+
+.night .vertical-center-row h1 small {
+  color: #a1a1aa;
+}

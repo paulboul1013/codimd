@@ -1,0 +1,433 @@
+/*
+ * HackMD reading theme, measured from hackmd.io published notes.
+ * Dark whenever <body> has the night class, which every page sets by default.
+ * Selectors start with :root so they outrank the .night rules in
+ * github-extract.css and markdown.css.
+ */
+
+/* Inter and Readex Pro, latin subset, SIL Open Font License 1.1. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/Inter-Latin-Variable.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Readex Pro';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('../fonts/ReadexPro-Latin-Variable.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  --hm-bg: #fdfdfd;
+  --hm-text: #3f3f46;
+  --hm-muted: #71717a;
+  --hm-link: #564dff;
+  --hm-border: #e4e4e7;
+  --hm-rule: #d4d4d8;
+  --hm-quote-bar: #e4e4e7;
+  --hm-code-bg: rgba(0, 0, 0, 0.04);
+  --hm-pre-bg: #f4f4f5;
+  --hm-table-head: #f4f4f5;
+  --hm-table-row: #fdfdfd;
+  --hm-info: #0284c7;
+  --hm-info-bg: #e0f2fe;
+  --hm-info-bar: #0284c7;
+  --hm-warning: #f59e0b;
+  --hm-warning-bg: rgba(254, 243, 199, 0.6);
+  --hm-warning-bar: #f59e0b;
+  --hm-success: #43946c;
+  --hm-success-bg: #d9f9e5;
+  --hm-success-bar: #43946c;
+  --hm-danger: #ef4444;
+  --hm-danger-bg: rgba(254, 226, 226, 0.6);
+  --hm-danger-bar: #ef4444;
+  --hm-hl-base: #3f3f46;
+  --hm-hl-keyword: #ff70b4;
+  --hm-hl-title: #6f42c1;
+  --hm-hl-constant: #005cc5;
+  --hm-hl-number: #005cc5;
+  --hm-hl-symbol: #e36209;
+  --hm-hl-string: #032f62;
+  --hm-hl-builtin: #e36209;
+  --hm-hl-comment: #6a737d;
+  --hm-hl-name: #22863a;
+  --hm-hl-subst: #24292e;
+  --hm-hl-bullet: #735c0f;
+  --hm-hl-tag: #3f3f46;
+  --hm-hl-add: #22863a;
+  --hm-hl-add-bg: #f0fff4;
+  --hm-hl-del: #b31d28;
+  --hm-hl-del-bg: #ffeef0;
+}
+
+.night {
+  --hm-bg: #27272a;
+  --hm-text: #d4d4d8;
+  --hm-muted: #a1a1aa;
+  --hm-link: #9894f9;
+  --hm-border: #52525b;
+  --hm-rule: #52525b;
+  --hm-quote-bar: #71717a;
+  --hm-code-bg: #3f3f46;
+  --hm-pre-bg: #303036;
+  --hm-table-head: #303036;
+  --hm-table-row: #27272a;
+  --hm-info: #38bdf8;
+  --hm-info-bg: rgba(56, 189, 248, 0.1);
+  --hm-info-bar: #0ea5e9;
+  --hm-warning: #f59e0b;
+  --hm-warning-bg: rgba(251, 191, 36, 0.1);
+  --hm-warning-bar: #f59e0b;
+  --hm-success: #6db19d;
+  --hm-success-bg: rgba(109, 177, 157, 0.15);
+  --hm-success-bar: #55b685;
+  --hm-danger: #f87171;
+  --hm-danger-bg: rgba(239, 68, 68, 0.2);
+  --hm-danger-bar: #ef4444;
+  --hm-hl-base: #d4d4d8;
+  --hm-hl-keyword: #ff70b4;
+  --hm-hl-title: #dcbdfb;
+  --hm-hl-constant: #6cb6ff;
+  --hm-hl-number: #9894f9;
+  --hm-hl-symbol: #9894f9;
+  --hm-hl-string: #96d0ff;
+  --hm-hl-builtin: #f69d50;
+  --hm-hl-comment: #768390;
+  --hm-hl-name: #8ddb8c;
+  --hm-hl-subst: #adbac7;
+  --hm-hl-bullet: #9894f9;
+  --hm-hl-tag: #d4d4d8;
+  --hm-hl-add: #b4f1b4;
+  --hm-hl-add-bg: #1b4721;
+  --hm-hl-del: #ffd8d3;
+  --hm-hl-del-bg: #78191b;
+}
+
+/* Page background */
+
+.pretty-page,
+:root .ui-view-area,
+:root .night .ui-view-area,
+:root .night .ui-content {
+  background-color: var(--hm-bg);
+}
+
+.pretty-page {
+  color: var(--hm-text);
+}
+
+/* Body text */
+
+:root .markdown-body {
+  color: var(--hm-text);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Roboto, Arial, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-size: 16px;
+  line-height: 1.75;
+  letter-spacing: 0.35px;
+}
+
+:root .markdown-body p,
+:root .markdown-body blockquote {
+  color: var(--hm-muted);
+}
+
+:root .markdown-body li,
+:root .markdown-body strong,
+:root .markdown-body b {
+  color: var(--hm-text);
+}
+
+:root .markdown-body a,
+:root .markdown-body .toc a {
+  color: var(--hm-link);
+  text-decoration: none;
+}
+
+:root .markdown-body a:hover {
+  text-decoration: underline;
+}
+
+/* Headings */
+
+:root .markdown-body h1,
+:root .markdown-body h2,
+:root .markdown-body h3,
+:root .markdown-body h4,
+:root .markdown-body h5,
+:root .markdown-body h6 {
+  color: var(--hm-text);
+  font-family: "Readex Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+:root .markdown-body h1 {
+  font-size: 2em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--hm-border);
+}
+
+:root .markdown-body h2 {
+  font-size: 1.5em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--hm-border);
+}
+
+:root .markdown-body h3 {
+  font-size: 1.25em;
+}
+
+:root .markdown-body h1 .fa-link,
+:root .markdown-body h2 .fa-link,
+:root .markdown-body h3 .fa-link,
+:root .markdown-body h4 .fa-link,
+:root .markdown-body h5 .fa-link,
+:root .markdown-body h6 .fa-link {
+  color: var(--hm-link);
+}
+
+/* Quotes and rules */
+
+:root .markdown-body blockquote {
+  border-left: 3px solid var(--hm-quote-bar);
+  padding: 0 1em;
+}
+
+:root .markdown-body hr {
+  height: 2px;
+  background-color: var(--hm-rule);
+  border-color: var(--hm-rule);
+}
+
+/* Code */
+
+:root .markdown-body code,
+:root .markdown-body tt {
+  color: var(--hm-text);
+  background-color: var(--hm-code-bg);
+  border-radius: 3px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* Diagrams keep CodiMD's night inversion; code blocks use the theme colors. */
+:root .markdown-body pre:not(.flow-chart):not(.sequence-diagram):not(.graphviz):not(.mermaid):not(.abc):not(.vega):not(.geo) {
+  color: var(--hm-muted);
+  background-color: var(--hm-pre-bg);
+  border-radius: 4px;
+  filter: none;
+}
+
+/* markdown.css fills the graph #333 and then inverts it to light gray. */
+:root .night .markdown-body pre.graphviz {
+  background-color: transparent;
+}
+
+:root .night .markdown-body pre.graphviz .graph > polygon {
+  fill: transparent;
+}
+
+:root .markdown-body pre > code {
+  color: var(--hm-hl-base);
+  background-color: transparent;
+}
+
+/* Tables */
+
+:root .markdown-body table {
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid var(--hm-border);
+  border-radius: 4px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+
+:root .markdown-body table th,
+:root .markdown-body table td {
+  color: var(--hm-text);
+  border: 0;
+  border-left: 1px solid var(--hm-border);
+  border-top: 1px solid var(--hm-border);
+}
+
+:root .markdown-body table tr > :first-child {
+  border-left: 0;
+}
+
+:root .markdown-body table thead tr:first-child > *,
+:root .markdown-body table > tbody:first-child > tr:first-child > * {
+  border-top: 0;
+}
+
+:root .markdown-body table tr,
+:root .markdown-body table tr:nth-child(2n) {
+  background-color: var(--hm-table-row);
+  border-top: 0;
+}
+
+:root .markdown-body table thead tr {
+  background-color: var(--hm-table-head);
+}
+
+/* Alerts (:::info, :::warning, :::success, :::danger) */
+
+:root .markdown-body .alert {
+  border: 0;
+  border-left: 3px solid;
+  border-radius: 4px;
+}
+
+:root .markdown-body .alert-info {
+  color: var(--hm-info);
+  background-color: var(--hm-info-bg);
+  border-left-color: var(--hm-info-bar);
+}
+
+:root .markdown-body .alert-warning {
+  color: var(--hm-warning);
+  background-color: var(--hm-warning-bg);
+  border-left-color: var(--hm-warning-bar);
+}
+
+:root .markdown-body .alert-success {
+  color: var(--hm-success);
+  background-color: var(--hm-success-bg);
+  border-left-color: var(--hm-success-bar);
+}
+
+:root .markdown-body .alert-danger {
+  color: var(--hm-danger);
+  background-color: var(--hm-danger-bg);
+  border-left-color: var(--hm-danger-bar);
+}
+
+:root .markdown-body .alert p,
+:root .markdown-body .alert li,
+:root .markdown-body .alert strong {
+  color: inherit;
+}
+
+/* Syntax highlighting (highlight.js) */
+
+:root .markdown-body .hljs {
+  color: var(--hm-hl-base);
+  background: transparent;
+}
+
+:root .markdown-body .hljs-doctag,
+:root .markdown-body .hljs-keyword,
+:root .markdown-body .hljs-template-tag,
+:root .markdown-body .hljs-template-variable,
+:root .markdown-body .hljs-type,
+:root .markdown-body .hljs-variable.language_,
+:root .markdown-body .hljs-selector-tag {
+  color: var(--hm-hl-keyword);
+}
+
+:root .markdown-body .hljs-title,
+:root .markdown-body .hljs-title.class_,
+:root .markdown-body .hljs-title.function_ {
+  color: var(--hm-hl-title);
+}
+
+:root .markdown-body .hljs-attr,
+:root .markdown-body .hljs-meta,
+:root .markdown-body .hljs-operator,
+:root .markdown-body .hljs-variable,
+:root .markdown-body .hljs-selector-attr,
+:root .markdown-body .hljs-selector-class,
+:root .markdown-body .hljs-selector-id {
+  color: var(--hm-hl-constant);
+}
+
+:root .markdown-body .hljs-regexp,
+:root .markdown-body .hljs-string,
+:root .markdown-body .hljs-meta .hljs-string {
+  color: var(--hm-hl-string);
+}
+
+:root .markdown-body .hljs-attribute,
+:root .markdown-body .hljs-literal,
+:root .markdown-body .hljs-number {
+  color: var(--hm-hl-number);
+}
+
+:root .markdown-body .hljs-built_in {
+  color: var(--hm-hl-builtin);
+}
+
+:root .markdown-body .hljs-symbol {
+  color: var(--hm-hl-symbol);
+}
+
+:root .markdown-body .hljs-comment,
+:root .markdown-body .hljs-code,
+:root .markdown-body .hljs-formula {
+  color: var(--hm-hl-comment);
+}
+
+:root .markdown-body .hljs-name,
+:root .markdown-body .hljs-quote,
+:root .markdown-body .hljs-selector-pseudo {
+  color: var(--hm-hl-name);
+}
+
+:root .markdown-body .hljs-tag {
+  color: var(--hm-hl-tag);
+}
+
+:root .markdown-body .hljs-subst {
+  color: var(--hm-hl-subst);
+}
+
+:root .markdown-body .hljs-section {
+  color: var(--hm-hl-constant);
+  font-weight: 700;
+}
+
+:root .markdown-body .hljs-bullet {
+  color: var(--hm-hl-bullet);
+}
+
+:root .markdown-body .hljs-emphasis {
+  color: var(--hm-hl-subst);
+  font-style: italic;
+}
+
+:root .markdown-body .hljs-strong {
+  color: var(--hm-hl-subst);
+  font-weight: 700;
+}
+
+:root .markdown-body .hljs-addition {
+  color: var(--hm-hl-add);
+  background-color: var(--hm-hl-add-bg);
+}
+
+:root .markdown-body .hljs-deletion {
+  color: var(--hm-hl-del);
+  background-color: var(--hm-hl-del-bg);
+}
+
+/* Table of contents */
+
+:root .ui-toc-dropdown .nav > li > a {
+  color: var(--hm-muted);
+}
+
+:root .ui-toc-dropdown .nav > .active > a,
+:root .ui-toc-dropdown .nav > .active:hover > a,
+:root .ui-toc-dropdown .nav > .active:focus > a,
+:root .ui-toc-dropdown .nav > li > a:hover,
+:root .ui-toc-dropdown .nav > li > a:focus {
+  color: var(--hm-link);
+  border-left-color: var(--hm-link);
+}

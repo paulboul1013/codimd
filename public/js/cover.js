@@ -32,6 +32,7 @@ require('./locale')
 
 require('../css/cover.css')
 require('../css/site.css')
+require('../css/night-ui.css')
 
 const options = {
   valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time', 'tags', 'pinned'],

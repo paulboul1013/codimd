@@ -289,7 +289,8 @@ module.exports = {
       path.join(__dirname, 'public/vendor/showup/showup.css'),
       path.join(__dirname, 'public/css/mermaid.css'),
       path.join(__dirname, 'public/css/markdown.css'),
-      path.join(__dirname, 'public/css/slide-preview.css')
+      path.join(__dirname, 'public/css/slide-preview.css'),
+      path.join(__dirname, 'public/css/hackmd-theme.css')
     ],
     'index-styles-pack': [
       path.join(__dirname, 'node_modules/bootstrap/dist/css/bootstrap.min.css'),
@@ -336,7 +337,8 @@ module.exports = {
       path.join(__dirname, 'public/css/github-extract.css'),
       path.join(__dirname, 'public/css/mermaid.css'),
       path.join(__dirname, 'public/css/markdown.css'),
-      path.join(__dirname, 'public/css/slide-preview.css')
+      path.join(__dirname, 'public/css/slide-preview.css'),
+      path.join(__dirname, 'public/css/hackmd-theme.css')
     ],
     'pretty-styles-pack': [
       path.join(__dirname, 'node_modules/bootstrap/dist/css/bootstrap.min.css'),
