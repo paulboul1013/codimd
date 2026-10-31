@@ -180,5 +180,11 @@
 	"Expand all": "Expand all",
 	"Collapse all": "Collapse all",
 	"Back to top": "Back to top",
-	"Go to bottom": "Go to bottom"
+	"Go to bottom": "Go to bottom",
+	"My notes": "My notes",
+	"No notes yet": "No notes yet",
+	"Unable to load your notes. Please try again.": "Unable to load your notes. Please try again.",
+	"Delete note": "Delete note",
+	"Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.": "Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.",
+	"Unable to delete the note. Please try again.": "Unable to delete the note. Please try again."
 }

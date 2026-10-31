@@ -27,6 +27,7 @@ import { saveAs } from 'file-saver'
 import List from 'list.js'
 import unescapeHTML from 'lodash/unescape'
 import setupMarkdownImport from './lib/markdown-import'
+import { deleteMyNote, loadMyNotes } from './lib/my-notes'
 
 require('./locale')
 
@@ -62,6 +63,33 @@ const options = {
 }
 const historyList = new List('history', options)
 
+const myNotesList = new List('my-notes', {
+  valueNames: ['id', 'text', 'timestamp', 'fromNow', 'time'],
+  searchColumns: ['text'],
+  item: `<li class="col-xs-12 col-sm-6 col-md-6 col-lg-4">
+          <span class="id" style="display:none;"></span>
+          <a href="#">
+            <div class="item">
+              <div class="ui-my-note-delete fa fa-trash-o fa-fw"></div>
+              <div class="content">
+                <h4 class="text"></h4>
+                <p>
+                  <i class="fa fa-clock-o"></i> <i class="fromNow"></i>
+                  <br>
+                  <i class="timestamp" style="display:none;"></i>
+                  <i class="time"></i>
+                </p>
+                <p class="tags"></p>
+              </div>
+            </div>
+          </a>
+        </li>`,
+  page: 18,
+  pagination: [{
+    outerWindow: 1
+  }]
+})
+
 window.migrateHistoryFromTempCallback = pageInit
 setloginStateChangeEvent(pageInit)
 
@@ -77,7 +105,8 @@ function pageInit () {
       else $('.ui-avatar').prop('src', '').hide()
       $('.ui-name').html(data.name)
       $('.ui-signout').show()
-      $('.ui-history').click()
+      $('.ui-my-notes').show().click()
+      refreshMyNotes()
       parseServerToHistory(historyList, parseHistoryCallback)
     },
     () => {
@@ -87,6 +116,9 @@ function pageInit () {
       $('.ui-avatar').prop('src', '').hide()
       $('.ui-name').html('')
       $('.ui-signout').hide()
+      if ($('#my-notes').is(':visible')) $('.ui-home').click()
+      $('.ui-my-notes').hide()
+      $('#my-notes').hide()
       parseStorageToHistory(historyList, parseHistoryCallback)
       // a shared note sent the visitor here to sign in first
       if (new URLSearchParams(window.location.search).get('next')) {
@@ -114,6 +146,13 @@ $('.ui-home').click(function (e) {
   }
 })
 
+$('.ui-my-notes').click(() => {
+  if (!$('#my-notes').is(':visible')) {
+    $('.section:visible').hide()
+    $('#my-notes').fadeIn()
+  }
+})
+
 $('.ui-history').click(() => {
   if (!$('#history').is(':visible')) {
     $('.section:visible').hide()
@@ -121,13 +160,84 @@ $('.ui-history').click(() => {
   }
 })
 
+function refreshMyNotes () {
+  $('.ui-my-notes-error').prop('hidden', true)
+  $('#my-notes .search').val('')
+  myNotesList.search()
+  return loadMyNotes({ serverURL: serverurl, fetch: window.fetch.bind(window), moment })
+    .then(items => {
+      myNotesList.clear()
+      myNotesList.add(items)
+    }, () => {
+      myNotesList.clear()
+      $('.ui-my-notes-error').prop('hidden', false)
+    })
+    .then(checkMyNotesList)
+}
+
+function checkMyNotesList () {
+  $('#my-notes .pagination').toggle($('#my-notes-list').children().length > 0)
+  $('.ui-no-my-notes').toggle(myNotesList.items.length === 0 && $('.ui-my-notes-error').prop('hidden'))
+}
+
+myNotesList.on('updated', e => {
+  for (const item of e.items) {
+    if (!item.visible()) continue
+    const itemEl = $(item.elm)
+    const values = item.values()
+    itemEl.find('a').attr('href', `${serverurl}/${values.id}`)
+    const tagsEl = itemEl.find('.tags')
+    if (values.tags.length > 0 && tagsEl.children().length === 0) {
+      tagsEl.html(values.tags.map(tag => `<span class='label label-default'>${tag}</span>`).join(' '))
+    }
+  }
+  checkMyNotesList()
+})
+
+$('.ui-refresh-my-notes').click(() => {
+  refreshMyNotes()
+})
+
+let deleteNoteId = null
+
+$('#my-notes-list').on('click', '.ui-my-note-delete', function (e) {
+  e.preventDefault()
+  e.stopPropagation()
+  const li = $(this).closest('li')[0]
+  const values = myNotesList.items.find(item => item.elm === li).values()
+  deleteNoteId = values.id
+  $('.ui-delete-note-modal-item').html(`<i class="fa fa-file-text"></i> ${values.text}`)
+  $('.ui-delete-note-modal-error').prop('hidden', true)
+  $('.delete-note-modal').modal('show')
+})
+
+$('.ui-delete-note-modal-confirm').click(function () {
+  const id = deleteNoteId
+  if (!id) return
+  const confirmButton = $(this).prop('disabled', true)
+  deleteMyNote({ serverURL: serverurl, fetch: window.fetch.bind(window), id })
+    .then(() => {
+      myNotesList.remove('id', id)
+      checkMyNotesList()
+      historyList.remove('id', id)
+      checkHistoryList()
+      deleteNoteId = null
+      $('.delete-note-modal').modal('hide')
+    }, () => {
+      $('.ui-delete-note-modal-error').prop('hidden', false)
+    })
+    .then(() => {
+      confirmButton.prop('disabled', false)
+    })
+})
+
 function checkHistoryList () {
   if ($('#history-list').children().length > 0) {
-    $('.pagination').show()
+    $('#history .pagination').show()
     $('.ui-nohistory').hide()
     $('.ui-import-from-browser').hide()
   } else if ($('#history-list').children().length === 0) {
-    $('.pagination').hide()
+    $('#history .pagination').hide()
     $('.ui-nohistory').slideDown()
     getStorageHistory(data => {
       if (data && data.length > 0 && getLoginState() && historyList.items.length === 0) {
@@ -369,11 +479,11 @@ $('.ui-refresh-history').click(() => {
   const lastTags = $('.ui-use-tags').select2('val')
   $('.ui-use-tags').select2('val', '')
   historyList.filter()
-  const lastKeyword = $('.search').val()
-  $('.search').val('')
+  const lastKeyword = $('#history .search').val()
+  $('#history .search').val('')
   historyList.search()
   $('#history-list').slideUp('fast')
-  $('.pagination').hide()
+  $('#history .pagination').hide()
 
   resetCheckAuth()
   historyList.clear()
@@ -382,7 +492,7 @@ $('.ui-refresh-history').click(() => {
     $('.ui-use-tags').select2('val', lastTags)
     $('.ui-use-tags').trigger('change')
     historyList.search(lastKeyword)
-    $('.search').val(lastKeyword)
+    $('#history .search').val(lastKeyword)
     checkHistoryList()
     $('#history-list').slideDown('fast')
   })
@@ -442,7 +552,7 @@ $('.ui-use-tags').on('change', function () {
   checkHistoryList()
 })
 
-$('.search').keyup(() => {
+$('#history .search').keyup(() => {
   checkHistoryList()
 })
 

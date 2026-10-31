@@ -289,6 +289,16 @@ input {
 .ui-history-close:hover {
     opacity: 1;
 }
+.ui-my-note-delete {
+    position: absolute;
+    right: 14px;
+    top: 15px;
+    font-size: 16px;
+    opacity: 0.5;
+}
+.ui-my-note-delete:hover {
+    opacity: 1;
+}
 .ui-history-pin {
     position: absolute;
     left: 14px;

@@ -9,7 +9,9 @@
                         <ul class="nav masthead-nav">
                             <li class="ui-home<% if(!signin) { %> active<% } %>"><a href="#"><%= __('Intro') %></a>
                             </li>
-                            <li class="ui-history<% if(signin) { %> active<% } %>"><a href="#"><%= __('History') %></a>
+                            <li class="ui-my-notes<% if(signin) { %> active<% } %>"<% if(!signin) { %> style="display:none;"<% } %>><a href="#"><%= __('My notes') %></a>
+                            </li>
+                            <li class="ui-history"><a href="#"><%= __('History') %></a>
                             </li>
                             <div class="ui-signin" style="float: right; margin-top: 8px;<% if(signin) { %> display: none;<% } %>">
                                 <% if (allowAnonymous) { %>
@@ -89,7 +91,30 @@
                 </div>
             </div>
 
-            <div id="history" class="section"<% if(!signin) { %> style="display:none;"<% } %>>
+            <div id="my-notes" class="section"<% if(!signin) { %> style="display:none;"<% } %>>
+                <br>
+                <form class="form-inline">
+                    <div class="form-group">
+                        <input class="search form-control" placeholder="<%= __('Search keyword...') %>" />
+                    </div>
+                    <a href="#" class="sort btn btn-default" data-sort="text" title="<%= __('Sort by title') %>">
+                    <%= __('Title') %>
+                    </a>
+                    <a href="#" class="sort btn btn-default" data-sort="timestamp" title="<%= __('Sort by time') %>">
+                    <%= __('Time') %>
+                    </a>
+                    <a href="#" class="btn btn-default ui-refresh-my-notes" title="<%= __('Refresh') %>"><i class="fa fa-refresh"></i></a>
+                </form>
+                <p class="alert alert-danger ui-my-notes-error" role="alert" hidden><%= __('Unable to load your notes. Please try again.') %></p>
+                <h4 class="ui-no-my-notes" style="display:none;">
+                    <%= __('No notes yet') %>
+                </h4>
+                <ul id="my-notes-list" class="list">
+                </ul>
+                <ul class="pagination"></ul>
+            </div>
+
+            <div id="history" class="section" style="display:none;">
                 <div class="ui-signin"<% if(signin) { %> style="display:none;"<% } %>>
                     <p><%= __('Below is the history from browser') %></p>
                 </div>
@@ -195,6 +220,27 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><%= __('Cancel') %></button>
                 <button type="button" class="btn btn-danger ui-delete-history-modal-confirm"><%= __('Yes, do it!') %></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- delete note modal -->
+<div class="modal fade delete-note-modal" tabindex="-1" role="dialog" aria-labelledby="deleteNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="deleteNoteModalLabel"><%= __('Delete note') %></h4>
+            </div>
+            <div class="modal-body">
+                <h5><%= __('Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.') %></h5>
+                <strong class="ui-delete-note-modal-item"></strong>
+                <p class="alert alert-danger ui-delete-note-modal-error" role="alert" hidden><%= __('Unable to delete the note. Please try again.') %></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><%= __('Cancel') %></button>
+                <button type="button" class="btn btn-danger ui-delete-note-modal-confirm"><%= __('Delete note') %></button>
             </div>
         </div>
     </div>

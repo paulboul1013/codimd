@@ -71,7 +71,8 @@
 }
 
 .night .ui-history-close,
-.night .ui-history-pin {
+.night .ui-history-pin,
+.night .ui-my-note-delete {
   color: #a1a1aa;
 }
 
@@ -94,6 +95,12 @@
   background-color: #303036;
   border-color: #52525b;
   text-shadow: none;
+}
+
+/* cover.css sets modal text to black */
+.night .modal-title,
+.night .modal-body {
+  color: #d4d4d8;
 }
 
 .night .modal-header,

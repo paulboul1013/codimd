@@ -180,5 +180,11 @@
 	"Copied.": "已複製。",
 	"Copy failed. The text is selected; copy it manually.": "複製失敗，已選取文字，請手動複製。",
 	"Back to home": "回到首頁",
-	"Sign in to open the shared note.": "登入後會回到分享的筆記。"
+	"Sign in to open the shared note.": "登入後會回到分享的筆記。",
+	"My notes": "我的筆記",
+	"No notes yet": "還沒有筆記",
+	"Unable to load your notes. Please try again.": "無法載入你的筆記，請再試一次。",
+	"Delete note": "刪除筆記",
+	"Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.": "要刪除這篇筆記嗎？內容與版本歷史會對所有人刪除，無法復原。",
+	"Unable to delete the note. Please try again.": "無法刪除筆記，請再試一次。"
 }
