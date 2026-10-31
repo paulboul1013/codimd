@@ -72,6 +72,18 @@ def remove(name):
   subprocess.run(['docker', 'rm', '-f', name], cwd=ROOT, capture_output=True)
 
 
+def wait_for_docker():
+  """At boot, WSL starts the Docker daemon a few seconds after this script."""
+  deadline = time.monotonic() + 120
+  while subprocess.run(['docker', 'info'], capture_output=True).returncode:
+    if time.monotonic() > deadline:
+      raise RuntimeError('Docker is not running after 120 seconds.')
+    time.sleep(2)
+  if not local.inspect(local.DATABASE)['State']['Running']:
+    run('docker', 'start', local.DATABASE)
+  local.wait_for_database()
+
+
 def start_tunnel():
   remove(TUNNEL)
   run('docker', 'run', '-d', '--name', TUNNEL, '--network', local.NETWORK, TUNNEL_IMAGE,
@@ -172,12 +184,15 @@ def stop():
 def main():
   parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument('--stop', action='store_true', help='remove the public containers and restart the local service')
+  parser.add_argument('--hold', action='store_true',
+                      help='keep running after startup; WSL shuts down, and stops the containers, once no process is left')
   args = parser.parse_args()
   try:
     if args.stop:
       stop()
       print(f'Stopped. Run ./bin/start-local to verify {local.URL}')
       return 0
+    wait_for_docker()
     url = start_tunnel()
     start_app(url)
     count = wait_for_public(url)
@@ -187,7 +202,11 @@ def main():
     print(f'ERROR: {error}', file=sys.stderr)
     return 1
   print(f'Tunnel: {url} ({count} CSS/JavaScript assets verified)')
-  print(f'GitHub Pages: {pages_url}')
+  print(f'GitHub Pages: {pages_url}', flush=True)
+  if args.hold:
+    print('Holding WSL open. Closing this process lets WSL stop CodiMD.', flush=True)
+    while True:
+      time.sleep(3600)
   return 0
 
 
