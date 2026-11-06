@@ -25,12 +25,13 @@ APP = 'codimd-public-app-1'
 TUNNEL = 'codimd-public-tunnel'
 TUNNEL_IMAGE = 'cloudflare/cloudflared:2025.8.1'
 BRANCH = 'gh-pages'
-# Anonymous visitors cannot create or edit notes, and strangers cannot register.
+# Anonymous visitors cannot create, read by default, or edit notes, and strangers cannot register.
 PUBLIC_ENV = {
   'CMD_PROTOCOL_USESSL': 'true',
   'CMD_URL_ADDPORT': 'false',
   'CMD_ALLOW_ANONYMOUS': 'false',
   'CMD_ALLOW_ANONYMOUS_EDITS': 'false',
+  'CMD_ALLOW_ANONYMOUS_VIEWS': 'false',
   'CMD_ALLOW_EMAIL_REGISTER': 'false',
 }
 
