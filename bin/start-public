@@ -163,7 +163,8 @@ def publish_pages(url):
 
 
 def wait_for_pages(pages_url, url):
-  deadline = time.monotonic() + 300
+  # A deploy has taken over five minutes, and the Pages CDN caches files for ten.
+  deadline = time.monotonic() + 900
   while time.monotonic() < deadline:
     try:
       request = Request(f'{pages_url}target.json?t={time.time()}', headers={'Cache-Control': 'no-cache'})
@@ -173,7 +174,7 @@ def wait_for_pages(pages_url, url):
     except (OSError, ValueError):
       pass
     time.sleep(5)
-  raise RuntimeError(f'{pages_url} did not publish {url} within 5 minutes.')
+  raise RuntimeError(f'{pages_url} did not publish {url} within 15 minutes.')
 
 
 def stop():
@@ -197,18 +198,24 @@ def main():
     url = start_tunnel()
     start_app(url)
     count = wait_for_public(url)
-    pages_url = publish_pages(url)
-    wait_for_pages(pages_url, url)
   except (RuntimeError, subprocess.CalledProcessError) as error:
     print(f'ERROR: {error}', file=sys.stderr)
     return 1
-  print(f'Tunnel: {url} ({count} CSS/JavaScript assets verified)')
-  print(f'GitHub Pages: {pages_url}', flush=True)
+  print(f'Tunnel: {url} ({count} CSS/JavaScript assets verified)', flush=True)
+  # CodiMD already serves the tunnel URL, so a Pages problem must not take it down.
+  pages_error = None
+  try:
+    pages_url = publish_pages(url)
+    wait_for_pages(pages_url, url)
+    print(f'GitHub Pages: {pages_url}', flush=True)
+  except (RuntimeError, subprocess.CalledProcessError) as error:
+    pages_error = error
+    print(f'WARNING: the GitHub Pages redirect is not ready: {error}', file=sys.stderr, flush=True)
   if args.hold:
     print('Holding WSL open. Closing this process lets WSL stop CodiMD.', flush=True)
     while True:
       time.sleep(3600)
-  return 0
+  return 1 if pages_error else 0
 
 
 if __name__ == '__main__':
