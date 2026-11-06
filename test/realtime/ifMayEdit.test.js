@@ -13,7 +13,7 @@ describe('realtime#ifMayEdit', function () {
   let modelsStub
   beforeEach(() => {
     removeLibModuleCache()
-    mock('../../lib/config', {})
+    mock('../../lib/config', { allowAnonymous: true, allowAnonymousEdits: true })
     mock('../../lib/logger', createFakeLogger())
     mock('../../lib/models', modelsStub)
     mock('../../lib/realtimeUpdateDirtyNoteJob', realtimeJobStub)
@@ -87,6 +87,35 @@ describe('realtime#ifMayEdit', function () {
       realtime.ifMayEdit(client, callback)
       assert(callback.calledOnce)
       assert(callback.lastCall.args[0] === tc.canEdit)
+    })
+  })
+
+  describe('when anonymous edits are disabled', function () {
+    beforeEach(() => {
+      removeLibModuleCache()
+      mock('../../lib/config', { allowAnonymous: false, allowAnonymousEdits: false })
+    })
+
+    function mayEdit (userId) {
+      const client = makeMockSocket()
+      if (userId) {
+        client.request.user.logged_in = true
+        client.request.user.id = userId
+      }
+      client.noteId = noteId
+      const realtime = require('../../lib/realtime/realtime')
+      realtime.getNotePool()[noteId] = { permission: Permission.Freely, owner: noteOwnerId }
+      const callback = sinon.stub()
+      realtime.ifMayEdit(client, callback)
+      return callback.lastCall.args[0]
+    }
+
+    it('guest can\'t edit a note with permission freely', function () {
+      assert.strictEqual(mayEdit(null), false)
+    })
+
+    it('logged-in user can still edit a note with permission freely', function () {
+      assert.strictEqual(mayEdit(loggedInUserId), true)
     })
   })
 
