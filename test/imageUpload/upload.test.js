@@ -16,7 +16,7 @@ const png = fs.readFileSync(path.join(__dirname, '../../public/favicon.png'))
 const svg = fs.readFileSync(path.join(__dirname, 'fixtures/image.svg'))
 
 describe('Image uploads', function () {
-  let server, config, tempDir
+  let server, config, tempDir, authenticated
 
   function request (method, url, body, headers) {
     return new Promise((resolve, reject) => {
@@ -51,6 +51,7 @@ describe('Image uploads', function () {
   beforeEach(function (done) {
     tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'codimd-image-upload-'))
     config = {
+      allowAnonymous: true,
       imageUploadType: 'filesystem',
       allowedUploadMimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'],
       uploadsPath: path.join(tempDir, 'uploads')
@@ -68,6 +69,11 @@ describe('Image uploads', function () {
     })
     mock.reRequire('../../lib/imageRouter/filesystem')
     const app = express()
+    authenticated = false
+    app.use((req, res, next) => {
+      req.isAuthenticated = () => authenticated
+      next()
+    })
     app.use(mock.reRequire('../../lib/imageRouter'))
     app.use('/uploads', express.static(config.uploadsPath))
     server = app.listen(0, '127.0.0.1', () => {
@@ -101,6 +107,27 @@ describe('Image uploads', function () {
       assert.deepStrictEqual(fs.readdirSync(tempDir), ['uploads'])
     })
   }
+
+  describe('when anonymous edits are disabled', function () {
+    beforeEach(function () {
+      config.allowAnonymous = false
+      config.allowAnonymousEdits = false
+    })
+
+    it('rejects a guest upload and stores nothing', async function () {
+      const response = await upload('image.png', png)
+      assert.strictEqual(response.status, 403)
+      assert.deepStrictEqual(fs.readdirSync(config.uploadsPath), [])
+      assert.deepStrictEqual(fs.readdirSync(tempDir), ['uploads'])
+    })
+
+    it('still accepts an upload from a logged-in user', async function () {
+      authenticated = true
+      const response = await upload('image.png', png)
+      assert.strictEqual(response.status, 200)
+      assert.strictEqual(fs.readdirSync(config.uploadsPath).length, 1)
+    })
+  })
 
   it('continues to upload PNG images', async function () {
     const response = await upload('image.png', png)
