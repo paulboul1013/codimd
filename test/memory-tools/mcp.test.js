@@ -116,7 +116,7 @@ describe('memory MCP server over stdio', function () {
 
     const list = await mcp.call('tools/list', {})
     assert.deepStrictEqual(list.result.tools.map(tool => tool.name), [
-      'memory_index', 'memory_search', 'memory_read', 'memory_create', 'memory_update', 'memory_append', 'memory_archive'
+      'memory_index', 'memory_search', 'memory_read', 'memory_create', 'memory_import_files', 'memory_update', 'memory_append', 'memory_archive'
     ])
     for (const tool of list.result.tools) assert.strictEqual(tool.inputSchema.type, 'object')
 

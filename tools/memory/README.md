@@ -83,9 +83,28 @@ The MCP server and the hook use the same lookup. The MCP server keeps the addres
 | `memory_search` | read | Search by text, scope, type, or archived state |
 | `memory_read` | read | One note in full |
 | `memory_create` | write | Create a note |
+| `memory_import_files` | write | Copy local document files into notes, one note per file |
 | `memory_update` | write | Replace a note's content |
 | `memory_append` | write | Append text to a note |
 | `memory_archive` | write | Archive a note instead of deleting it |
+
+## Import documents
+
+`memory_import_files` and `import-docs.js` copy local `.md`, `.markdown`, and `.txt` files into memory notes. The server reads each file itself, so the file content never passes through the agent. One MCP call can import up to 200 files with one approval.
+
+```sh
+node tools/memory/import-docs.js --dry-run docs/                     # list what would happen
+node tools/memory/import-docs.js docs/ notes/plan.md                 # create the notes
+node tools/memory/import-docs.js --update docs/                      # also replace notes imported earlier
+node tools/memory/import-docs.js --scope global --type reference --tag kb README.md
+```
+
+- A directory adds every document file under it, skipping dot directories and `node_modules`.
+- The title is `--title` (one file only), else the file's first `# ` heading, which is then removed from the body, else the file name.
+- The type defaults to `doc`. Every note gets the tag `imported` plus each `--tag`.
+- The scope defaults to the repo name of the path's `origin` remote, else the git top-level directory name, else the directory's own name. A file does not have to be in a git repo or on GitHub, and the note gets no link to one.
+- The body ends with `<!-- imported-from: file:<absolute path> -->`. A rerun skips files already imported from the same path; `--update` replaces their content and keeps each note's scope, type, and tags.
+- Files are written one at a time. A file that fails, for example one longer than the server's note limit, is reported and the rest continue. The script exits with status 1 when any file failed.
 
 The current project is the repo name of the working directory's `origin` remote, or the name of the git top-level directory when there is no remote.
 

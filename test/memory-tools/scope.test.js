@@ -43,7 +43,11 @@ describe('memory tools scope rule', function () {
     it(`${tool.name} accepts exactly the scopes the server accepts`, function () {
       for (const scope of samples) {
         const args = { scope }
-        for (const key of tool.inputSchema.required) if (key !== 'scope') args[key] = key === 'type' ? 'doc' : 'x'
+        for (const key of tool.inputSchema.required) {
+          if (key === 'scope') continue
+          const rule = tool.inputSchema.properties[key]
+          args[key] = key === 'type' ? 'doc' : rule.type === 'array' ? ['x'] : 'x'
+        }
         assert.strictEqual(invalidArguments(tool, args) === null, memoryTags.isValidScope(scope), scope)
       }
     })

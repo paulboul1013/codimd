@@ -1,5 +1,7 @@
 'use strict'
 
+const { collectDocuments, importDocuments, summarize, MAX_FILES } = require('./importDocs')
+
 const TYPES = ['user', 'feedback', 'project', 'reference', 'doc', 'handoff']
 const SCOPE = {
   type: 'string',
@@ -104,6 +106,27 @@ const TOOLS = [
     async run (client, args) {
       const { note } = await client.request('POST', '/notes', { title: args.title, body: args.body, scope: args.scope, type: args.type, tags: args.tags })
       return written('Created', note)
+    }
+  },
+  {
+    name: 'memory_import_files',
+    description: 'Copy local document files into memory notes, one note per file. The server reads the files itself, so pass paths instead of pasting file content into memory_create. Use it to import or re-sync documents, including files that are not in a git repo. One call imports many files with one approval.' + NEEDS_APPROVAL,
+    inputSchema: schema({
+      paths: { type: 'array', items: { type: 'string' }, description: `Files or directories, absolute or relative to the working directory. A directory adds every .md, .markdown, and .txt file under it. At most ${MAX_FILES} files per call.` },
+      scope: Object.assign({}, SCOPE, { description: SCOPE.description + ' Defaults to the git repo of each path, or its directory name outside a repo.' }),
+      type: Object.assign({}, TYPE, { description: 'What the notes are for. Defaults to doc.' }),
+      tags: { type: 'array', items: { type: 'string' }, description: 'Extra tags. Every imported note also gets the tag imported.' },
+      title: { type: 'string', description: 'Note title, only when importing one file. Defaults to the file\'s first # heading, else its file name.' },
+      update: { type: 'boolean', description: 'Replace the content of notes already imported from the same file. Without it those files are skipped.' },
+      dryRun: { type: 'boolean', description: 'List what would happen without writing anything.' }
+    }, ['paths']),
+    async run (client, args) {
+      if (!args.paths.length) throw new Error('paths must name at least one file or directory.')
+      const documents = collectDocuments(args.paths, { scope: args.scope })
+      if (!documents.length) throw new Error('No .md, .markdown, or .txt files found.')
+      if (args.title && documents.length > 1) throw new Error('title only works when importing one file.')
+      const results = await importDocuments(client, documents, { type: args.type, tags: args.tags, title: args.title, update: args.update, dryRun: args.dryRun })
+      return (args.dryRun ? 'Dry run: nothing was written.\n' : '') + summarize(results, args.dryRun)
     }
   },
   {
