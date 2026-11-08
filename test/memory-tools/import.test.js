@@ -190,13 +190,25 @@ describe('memory import: command', function () {
     assert.deepStrictEqual(created.sort((a, b) => a.body < b.body ? -1 : 1), [
       { title: 'me', scope: 'global', type: 'user', tags: ['imported'], body: 'About me.\n\n<!-- imported-from: global/me -->' },
       { title: 'Roughly match Python', scope: 'project:tai_ci', type: 'feedback', tags: ['imported'], body: 'Body of parity.\n\n<!-- imported-from: project:tai_ci/parity -->' },
-      { title: 'odd', scope: 'project:tai_ci', type: 'reference', tags: ['imported'], body: 'Odd body.\n\n<!-- imported-from: project:tai_ci/odd -->' }
+      { title: 'odd', scope: 'project:tai_ci', type: 'doc', tags: ['imported'], body: 'Odd body.\n\n<!-- imported-from: project:tai_ci/odd -->' }
     ])
     assert.ok(api.requests.every(request => request.auth === 'Bearer test-token'))
     assert.match(output, /^create +project:tai_ci +feedback +parity$/m)
-    assert.match(output, /type "doc" is not importable, using reference/)
+    assert.doesNotMatch(output, /not importable/)
     assert.match(output, /created 3, skipped 0/)
     assert.doesNotMatch(output, /scratch|MEMORY/)
+  })
+
+  it('keeps the handoff type and imports an unknown or missing type as reference with a notice', async function () {
+    memoryFile(path.join(home, 'zenc'), 'pass.md', '---\nname: pass\ntype: handoff\n---\nPass it on.\n')
+    memoryFile(path.join(home, 'zenc'), 'weird.md', '---\nname: weird\ntype: diary\n---\nDear diary.\n')
+    memoryFile(path.join(home, 'zenc'), 'bare.md', '---\nname: bare\n---\nNo type.\n')
+    const output = await runImport([], env)
+    const typeOf = title => api.notes.find(note => note.title === title).type
+    assert.deepStrictEqual(['pass', 'weird', 'bare'].map(typeOf), ['handoff', 'reference', 'reference'])
+    assert.match(output, /type "diary" is not importable, using reference/)
+    assert.match(output, /type "missing" is not importable, using reference/)
+    assert.doesNotMatch(output, /type "(doc|handoff)" is not importable/)
   })
 
   it('skips every file on a rerun because the marker is already there', async function () {
@@ -229,7 +241,7 @@ describe('memory import: command', function () {
     api.notes.push({ id: 'other', scope: 'project:zenc', content: 'Other odd.\n\n<!-- imported-from: odd -->\n' })
     const output = await runImport([], env)
     assert.match(output, /^skip +project:tai_ci +feedback +parity$/m)
-    assert.match(output, /^create +project:tai_ci +reference +odd\b/m)
+    assert.match(output, /^create +project:tai_ci +doc +odd\b/m)
     assert.match(output, /created 2, skipped 1/)
   })
 

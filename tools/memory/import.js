@@ -6,8 +6,8 @@ const os = require('os')
 const path = require('path')
 
 const { createClient, projectScope } = require('./client')
+const { TYPES } = require('./tools')
 
-const IMPORT_TYPES = ['user', 'feedback', 'project', 'reference']
 const FALLBACK_TYPE = 'reference'
 const TITLE_MAX = 120
 const USAGE = 'Usage: node tools/memory/import.js [--dry-run [--offline]] [--root <dir>]'
@@ -151,7 +151,7 @@ function collectMemories (root, home) {
     let projectScopeCache = null
     for (const file of files) {
       const memory = parseMemoryFile(fs.readFileSync(path.join(memoryDir, file), 'utf8'), path.basename(file, '.md'))
-      const type = IMPORT_TYPES.includes(memory.type) ? memory.type : FALLBACK_TYPE
+      const type = TYPES.includes(memory.type) ? memory.type : FALLBACK_TYPE
       if (type !== 'user' && !projectScopeCache) projectScopeCache = projectScopeFor(projectDir, home)
       const scope = type === 'user' ? 'global' : projectScopeCache
       memories.push({

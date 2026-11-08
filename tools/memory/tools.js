@@ -152,4 +152,4 @@ function invalidArguments (tool, args) {
   return null
 }
 
-module.exports = { TOOLS, invalidArguments }
+module.exports = { TYPES, TOOLS, invalidArguments }
