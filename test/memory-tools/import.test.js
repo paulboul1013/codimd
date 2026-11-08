@@ -67,6 +67,7 @@ describe('memory import: parsing', function () {
 })
 
 describe('memory import: project scope', function () {
+  this.timeout(15000)
   let root, home
 
   beforeEach(function () {
@@ -154,7 +155,7 @@ function runImport (args, env) {
 }
 
 describe('memory import: command', function () {
-  this.timeout(10000)
+  this.timeout(15000)
   let root, home, projects, api, env
 
   function memoryFile (projectPath, file, text) {

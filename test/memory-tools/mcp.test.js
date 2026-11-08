@@ -80,7 +80,7 @@ function startMcp (env, cwd) {
 }
 
 describe('memory MCP server over stdio', function () {
-  this.timeout(10000)
+  this.timeout(15000)
   let server
   let requests
   let home

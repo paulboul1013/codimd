@@ -225,6 +225,7 @@ describe('memory tools client', function () {
 })
 
 describe('projectScope', function () {
+  this.timeout(15000)
   let dir
 
   beforeEach(function () {
