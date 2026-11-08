@@ -88,3 +88,19 @@ The MCP server and the hook use the same lookup. The MCP server keeps the addres
 | `memory_archive` | write | Archive a note instead of deleting it |
 
 The current project is the repo name of the working directory's `origin` remote, or the name of the git top-level directory when there is no remote.
+
+## Import local memory
+
+`import.js` copies the Claude Code memory files in `~/.claude/projects/*/memory/` into memory notes, once. Run it after setup, preview first:
+
+```sh
+node tools/memory/import.js --dry-run --offline   # list the files, without a token or server
+node tools/memory/import.js --dry-run             # also check which notes already exist
+node tools/memory/import.js                       # create the notes
+```
+
+- Each file becomes one note with the file's type and the tag `imported`. A type other than `user`, `feedback`, `project`, or `reference` becomes `reference`.
+- `user` memories go to `global`. Other memories go to the scope of their project: the git repo the project directory points to, or the directory name when it is not a repo.
+- `MEMORY.md` index files and project directories under `/tmp` are skipped.
+- The note body ends with `<!-- imported-from: <name> -->`. A rerun skips each file whose marker is already in a note, archived notes included.
+- `--root <dir>` reads another projects directory.
