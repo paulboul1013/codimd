@@ -3,7 +3,7 @@
 const TYPES = ['user', 'feedback', 'project', 'reference', 'doc', 'handoff']
 const SCOPE = {
   type: 'string',
-  pattern: '^(global|project:[a-z0-9][a-z0-9._-]*)$',
+  pattern: '^(global|[pP][rR][oO][jJ][eE][cC][tT]:[a-zA-Z0-9][a-zA-Z0-9._-]{0,99})$',
   description: "'global' for memory that applies everywhere, or 'project:<repo name>' for one project."
 }
 const TYPE = { type: 'string', enum: TYPES, description: 'What the memory is for.' }
