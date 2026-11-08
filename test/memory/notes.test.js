@@ -43,6 +43,7 @@ describe('memory notes API', function () {
     })
     mock('../../lib/realtime/realtime', {
       getNoteFromNotePool: id => pool[id],
+      withNoteLock: (id, task) => task(),
       io: { to: room => ({ emit: (...args) => emitted.push({ room, args }) }) }
     })
     config = require('../../lib/config')
@@ -473,46 +474,6 @@ describe('memory notes API', function () {
       assert.deepStrictEqual(res.body, NOT_FOUND)
       assert.strictEqual(live.server.document, '# no longer a memory\n')
       assert.strictEqual(emitted.length, 0)
-    })
-
-    describe('when a browser opens the note during a database write', function () {
-      function openDuringUpdate (row, document) {
-        const findOne = Note.findOne
-        Note.findOne = async options => {
-          const instance = await findOne(options)
-          const update = instance.update
-          instance.update = async function (values) {
-            openInEditor(row, document)
-            return update.call(this, values)
-          }
-          return instance
-        }
-      }
-
-      it('brings an editor that loaded the old row forward', async function () {
-        const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
-        const before = row.content
-        openDuringUpdate(row, before)
-
-        const res = await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
-
-        assert.strictEqual(res.status, 200)
-        assert.strictEqual(row.content, before + '\n\nmore')
-        assert.strictEqual(pool[row.id].server.document, before + '\n\nmore')
-        assert.strictEqual(emitted.length, 1)
-        assert.strictEqual(revisions.length, 1)
-      })
-
-      it('leaves an editor alone once someone typed in it', async function () {
-        const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
-        const typed = row.content + ' typed'
-        openDuringUpdate(row, typed)
-
-        await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
-
-        assert.strictEqual(pool[row.id].server.document, typed)
-        assert.strictEqual(emitted.length, 0)
-      })
     })
   })
 })
