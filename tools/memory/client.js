@@ -14,7 +14,18 @@ const START_HINT = 'Start it with ./bin/start-local or ./bin/start-public in the
 // Errors raised before the request left this machine, so retrying cannot repeat a write.
 const CONNECT_ERRORS = new Set(['ECONNREFUSED', 'ENOTFOUND', 'EAI_AGAIN', 'EHOSTUNREACH', 'ENETUNREACH', 'UND_ERR_CONNECT_TIMEOUT'])
 
+// Cloudflare answers 530 (error 1033) when the tunnel is gone, before any origin sees the request.
+const TUNNEL_GONE_STATUS = 530
+
 class MemoryApiError extends Error {}
+
+// An HTTP error page that the memory API did not write, which always answers JSON.
+class NotTheApiError extends Error {
+  constructor (status) {
+    super(`HTTP ${status}`)
+    this.status = status
+  }
+}
 
 function configPath (home) {
   return path.join(home, '.config', 'codimd-memory', 'config.json')
@@ -45,8 +56,18 @@ function isConnectError (error) {
   return Boolean(error && error.cause && CONNECT_ERRORS.has(error.cause.code))
 }
 
+// Retry only when the request cannot have reached the memory API, or cannot change anything.
+function isUnreachable (error, method) {
+  if (isConnectError(error)) return true
+  return error instanceof NotTheApiError && (method === 'GET' || error.status === TUNNEL_GONE_STATUS)
+}
+
 function reason (error) {
   return (error.cause && error.cause.code) || error.message
+}
+
+function toApiError (error) {
+  return error instanceof NotTheApiError ? new MemoryApiError(`CodiMD answered ${error.message}`) : error
 }
 
 function createClient ({ env = process.env, home = os.homedir(), fetch = globalThis.fetch } = {}) {
@@ -93,6 +114,7 @@ function createClient ({ env = process.env, home = os.homedir(), fetch = globalT
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
     })
     const payload = await response.json().catch(() => null)
+    if (!response.ok && (!payload || typeof payload.status !== 'string')) throw new NotTheApiError(response.status)
     if (!response.ok || !payload || payload.status !== 'ok') {
       throw new MemoryApiError((payload && payload.message) || `CodiMD answered HTTP ${response.status}`)
     }
@@ -105,12 +127,12 @@ function createClient ({ env = process.env, home = os.homedir(), fetch = globalT
     try {
       return await send(method, route, body)
     } catch (error) {
-      if (!isConnectError(error)) throw error
+      if (!isUnreachable(error, method)) throw toApiError(error)
       base = await resolveBase()
       try {
         return await send(method, route, body)
       } catch (retryError) {
-        if (!isConnectError(retryError)) throw retryError
+        if (!isUnreachable(retryError, method)) throw toApiError(retryError)
         throw new MemoryApiError(`CodiMD at ${base} is not reachable: ${reason(retryError)}. ${START_HINT}`)
       }
     }

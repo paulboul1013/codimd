@@ -165,6 +165,57 @@ describe('memory tools client', function () {
       assert.strictEqual(fake.calls.length, 1)
     })
 
+    const deadTunnel = () => new Response('<html>Error 1033: Cloudflare Tunnel error</html>', { status: 530, headers: { 'Content-Type': 'text/html' } })
+
+    it('re-resolves once when the tunnel answers with a Cloudflare error page', async function () {
+      const fake = fakeFetch({
+        [PAGES]: [() => json({ url: 'https://old.test' }), () => json({ url: 'https://new.test' })],
+        'https://old.test/api/memory/notes/a/append': [deadTunnel],
+        'https://new.test/api/memory/notes/a/append': [() => json({ status: 'ok', note: {} })]
+      })
+      const result = await createClient({ env, home, fetch: fake.fetch }).request('POST', '/notes/a/append', { text: 'x' })
+      assert.strictEqual(result.status, 'ok')
+      assert.deepStrictEqual(fake.urls(), [
+        PING, PAGES, 'https://old.test/api/memory/notes/a/append',
+        PING, PAGES, 'https://new.test/api/memory/notes/a/append'
+      ])
+    })
+
+    it('says how to start CodiMD when the tunnel stays dead', async function () {
+      const fake = fakeFetch({
+        [PAGES]: [() => json({ url: 'https://old.test' })],
+        'https://old.test/api/memory/notes': [deadTunnel]
+      })
+      await assert.rejects(
+        createClient({ env, home, fetch: fake.fetch }).request('GET', '/notes'),
+        error => /not reachable: HTTP 530\./.test(error.message) && error.message.includes('./bin/start-local or ./bin/start-public')
+      )
+      assert.strictEqual(fake.urls().filter(url => url.endsWith('/notes')).length, 2)
+    })
+
+    it('re-resolves a read after any non-API error page', async function () {
+      const fake = fakeFetch({
+        'http://env.test/api/memory/notes': [() => new Response('<html>Bad gateway</html>', { status: 502 }), () => json({ status: 'ok', notes: [] })]
+      })
+      const result = await createClient({ env: fixed, home, fetch: fake.fetch }).request('GET', '/notes')
+      assert.deepStrictEqual(result, { status: 'ok', notes: [] })
+      assert.strictEqual(fake.calls.length, 2)
+    })
+
+    it('does not resend a write after an error page that may come from behind the tunnel', async function () {
+      const fake = fakeFetch({ 'http://env.test/api/memory/notes/a/append': [() => new Response('<html>Gateway timeout</html>', { status: 524 })] })
+      const client = createClient({ env: fixed, home, fetch: fake.fetch })
+      await assert.rejects(client.request('POST', '/notes/a/append', { text: 'x' }), /HTTP 524/)
+      assert.strictEqual(fake.calls.length, 1)
+    })
+
+    it('does not resend a write the memory API answered with an error', async function () {
+      const fake = fakeFetch({ 'http://env.test/api/memory/notes/a/append': [() => json({ status: 'error', message: 'Internal error' }, 530)] })
+      const client = createClient({ env: fixed, home, fetch: fake.fetch })
+      await assert.rejects(client.request('POST', '/notes/a/append', { text: 'x' }), { message: 'Internal error' })
+      assert.strictEqual(fake.calls.length, 1)
+    })
+
     it('surfaces the API error message', async function () {
       const fake = fakeFetch({ 'http://env.test/api/memory/notes/x': [() => json({ status: 'error', message: 'Note not found' }, 404)] })
       const client = createClient({ env: fixed, home, fetch: fake.fetch })

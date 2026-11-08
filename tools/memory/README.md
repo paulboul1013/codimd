@@ -73,7 +73,7 @@ The client uses the first of these that applies:
 2. `http://localhost:3000`, when its memory API answers within 1.5 seconds.
 3. The tunnel URL in `https://paulboul1013.github.io/codimd/target.json`, which `./bin/start-public` publishes.
 
-The MCP server and the hook use the same lookup. The MCP server keeps the address for its lifetime and looks it up again once after a connection failure.
+The MCP server and the hook use the same lookup. The MCP server keeps the address for its lifetime and looks it up again once after a connection failure. A Cloudflare 530 error page, which a stopped tunnel returns, counts as a connection failure. A read also looks the address up again after any other error page that is not a memory API answer. A write does not, because the server may already have applied it.
 
 ## Tools
 
