@@ -3,6 +3,7 @@
 
 const assert = require('assert')
 const http = require('http')
+const { performance } = require('perf_hooks')
 const express = require('express')
 const mock = require('mock-require')
 const sinon = require('sinon')
@@ -190,9 +191,9 @@ describe('concurrent memory API writes', function () {
       await delay(DB_MS * 3)
       const busyConnected = connect(busy.row.id)
       await delay(5)
-      const started = Date.now()
+      const started = performance.now()
       await connect(other.row.id)
-      const waited = Date.now() - started
+      const waited = Math.round(performance.now() - started)
       await busyConnected
       await Promise.all(writes)
 
