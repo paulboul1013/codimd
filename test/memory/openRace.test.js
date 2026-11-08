@@ -80,8 +80,7 @@ describe('memory write while a browser opens the note', function () {
     await until(() => releaseBrowserRead)
 
     const note = await Note.findOne({ where: { id: row.id } })
-    const base = writeMemoryNote.readBase(note)
-    const writing = writeMemoryNote.writeMemoryNote(note, base, 'old\n\nnew', 'user-1')
+    const writing = writeMemoryNote.writeMemoryNote(note, 'user-1', current => current + '\n\nnew')
     for (let i = 0; i < 5; i++) await tick()
     releaseBrowserRead()
     await writing
@@ -93,13 +92,19 @@ describe('memory write while a browser opens the note', function () {
   it('makes a browser that connects during the database write read the new row', async function () {
     const row = Note.insert({ ownerId: 'user-1', permission: 'private', content: 'old' })
     const note = await Note.findOne({ where: { id: row.id } })
-    const update = note.update
     let releaseWrite
-    note.update = async function (values) {
-      await new Promise(resolve => { releaseWrite = resolve })
-      return update.call(this, values)
+    const findRow = Note.findOne
+    Note.findOne = async options => {
+      const found = await findRow(options)
+      if (options.include || !found) return found
+      const update = found.update
+      found.update = async function (values) {
+        await new Promise(resolve => { releaseWrite = resolve })
+        return update.call(this, values)
+      }
+      return found
     }
-    const writing = writeMemoryNote.writeMemoryNote(note, writeMemoryNote.readBase(note), 'old\n\nnew', 'user-1')
+    const writing = writeMemoryNote.writeMemoryNote(note, 'user-1', current => current + '\n\nnew')
     await until(() => releaseWrite)
 
     connectBrowser(row.id)
