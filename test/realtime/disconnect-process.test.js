@@ -78,6 +78,63 @@ describe('realtime#disconnect', function () {
     }, 5)
   })
 
+  it('saves again before dropping the note when a write lands during the save', function (done) {
+    const server = realtime.notes[noteId].server
+    server.document = 'saved'
+    const savedDocuments = []
+    updateNoteStub.callsFake((note, callback) => {
+      savedDocuments.push(note.server.document)
+      // A memory API live write arrives while the first save awaits the database.
+      if (savedDocuments.length === 1) {
+        note.server.document = 'saved plus api write'
+        note.server.isDirty = true
+      }
+      setImmediate(() => callback(null, note))
+    })
+
+    realtime.queueForDisconnect(client)
+
+    setTimeout(() => {
+      assert.deepStrictEqual(savedDocuments, ['saved', 'saved plus api write'])
+      assert.strictEqual(server.isDirty, false)
+      assert(Object.keys(realtime.notes).length === 0)
+      done()
+    }, 20)
+  })
+
+  it('saves again when the dirty-note job cleared the flag of a write that landed during the save', function (done) {
+    realtime.notes[noteId].server.document = 'saved'
+    const savedDocuments = []
+    updateNoteStub.callsFake((note, callback) => {
+      savedDocuments.push(note.server.document)
+      if (savedDocuments.length === 1) {
+        note.server.document = 'saved plus api write'
+        note.server.isDirty = false
+      }
+      setImmediate(() => callback(null, note))
+    })
+
+    realtime.queueForDisconnect(client)
+
+    setTimeout(() => {
+      assert.deepStrictEqual(savedDocuments, ['saved', 'saved plus api write'])
+      assert(Object.keys(realtime.notes).length === 0)
+      done()
+    }, 20)
+  })
+
+  it('keeps a note whose disconnect save failed so the dirty-note job retries it', function (done) {
+    updateNoteStub.callsFake((note, callback) => callback(new Error('db down'), null))
+
+    realtime.queueForDisconnect(client)
+
+    setTimeout(() => {
+      assert(updateNoteStub.calledOnce)
+      assert.strictEqual(realtime.notes[noteId].server.isDirty, true)
+      done()
+    }, 5)
+  })
+
   it('should disconnect success when note is not dirty', function (done) {
     realtime.notes[noteId].server.isDirty = false
     realtime.queueForDisconnect(client)
