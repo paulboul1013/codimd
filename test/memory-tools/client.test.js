@@ -21,18 +21,21 @@ function networkError (code) {
   return Object.assign(new TypeError('fetch failed'), { cause: { code } })
 }
 
+// The cache-busting query on the GitHub Pages lookup changes on every call.
+const withoutCacheBuster = url => url.replace(/\?t=\d+$/, '')
+
 // Each route is a queue of responses or errors to throw; the last entry repeats.
 function fakeFetch (routes) {
   const calls = []
   async function fetch (url, options = {}) {
     calls.push({ url, method: options.method || 'GET', headers: options.headers || {} })
-    const queue = routes[url]
+    const queue = routes[withoutCacheBuster(url)]
     if (!queue) throw networkError('ECONNREFUSED')
     const next = queue.length > 1 ? queue.shift() : queue[0]
     if (next instanceof Error) throw next
     return next()
   }
-  return { fetch, calls, urls: () => calls.map(call => call.url) }
+  return { fetch, calls, urls: () => calls.map(call => withoutCacheBuster(call.url)) }
 }
 
 function tempDir () {
@@ -108,6 +111,19 @@ describe('memory tools client', function () {
       })
       await createClient({ env, home, fetch: fake.fetch }).request('GET', '/notes')
       assert.deepStrictEqual(fake.urls(), [PING, PAGES, 'https://tunnel.test/api/memory/notes'])
+    })
+
+    it('bypasses the GitHub Pages CDN cache when it looks up the tunnel', async function () {
+      const fake = fakeFetch({
+        [PAGES]: [() => json({ url: 'https://tunnel.test' })],
+        'https://tunnel.test/api/memory/notes': [() => json({ status: 'ok', notes: [] })]
+      })
+      const before = Date.now()
+      await createClient({ env, home, fetch: fake.fetch }).request('GET', '/notes')
+      const lookup = fake.calls[1].url
+      const match = /^https:\/\/paulboul1013\.github\.io\/codimd\/target\.json\?t=(\d+)$/.exec(lookup)
+      assert(match, lookup)
+      assert(Number(match[1]) >= before && Number(match[1]) <= Date.now(), lookup)
     })
 
     it('does not mistake another server on port 3000 for the memory API', async function () {

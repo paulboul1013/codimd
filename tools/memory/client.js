@@ -64,7 +64,8 @@ function createClient ({ env = process.env, home = os.homedir(), fetch = globalT
   }
 
   async function lookUpTunnel () {
-    const response = await fetch(PAGES_TARGET, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
+    // GitHub Pages caches target.json for minutes; a stale URL names a dead tunnel.
+    const response = await fetch(`${PAGES_TARGET}?t=${Date.now()}`, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) })
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
     const target = await response.json()
     if (!target || typeof target.url !== 'string') throw new Error('target.json has no url')
