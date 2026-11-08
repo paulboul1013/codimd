@@ -1,6 +1,6 @@
 # CodiMD memory MCP server
 
-An MCP server that gives Claude Code the `memory_*` tools for the second brain: memory notes stored in CodiMD and reached through `/api/memory`. It runs on the host with Node 18 or later and has no npm dependencies.
+An MCP server, a SessionStart hook, and a skill that give Claude Code the second brain: memory notes stored in CodiMD and reached through `/api/memory`. It runs on the host with Node 18 or later and has no npm dependencies.
 
 ## Setup
 
@@ -29,6 +29,42 @@ An MCP server that gives Claude Code the `memory_*` tools for the second brain: 
    "mcp__codimd-memory__memory_read"
    ```
 
+5. Add the SessionStart hook and turn off local auto memory in `~/.claude/settings.json`:
+
+   ```json
+   "autoMemoryEnabled": false,
+   "hooks": {
+     "SessionStart": [
+       {
+         "hooks": [
+           { "type": "command", "command": "node /home/paulboul/codimd/tools/memory/session-start.js" }
+         ]
+       }
+     ]
+   }
+   ```
+
+6. Install the `second-brain` skill, which tells the agent when to propose a memory and how to write it:
+
+   ```sh
+   mkdir -p ~/.claude/skills
+   ln -s /home/paulboul/codimd/tools/memory/skill ~/.claude/skills/second-brain
+   ```
+
+   Copy the directory instead of linking it if you do not want later edits in this repo to take effect.
+
+## SessionStart hook
+
+`session-start.js` reads the hook input from stdin and uses its `cwd` to find the current project, or the process working directory when the input has none. It prints the titles of the global and project memory notes, at most 50 per scope, and says how many it left out. Claude Code adds this output to the session context.
+
+When the hook cannot load the index, it prints one line that starts with `第二大腦：CodiMD 無法連線` and exits with status 0, so the session still starts. This happens when CodiMD is not reachable, no token is configured, the server rejects the token, or the hook takes longer than 5 seconds. The hook never prints the token.
+
+Run it by hand to see what a session gets:
+
+```sh
+echo '{"cwd": "'"$PWD"'"}' | node /home/paulboul/codimd/tools/memory/session-start.js
+```
+
 ## Server address
 
 The client uses the first of these that applies:
@@ -37,7 +73,7 @@ The client uses the first of these that applies:
 2. `http://localhost:3000`, when its memory API answers within 1.5 seconds.
 3. The tunnel URL in `https://paulboul1013.github.io/codimd/target.json`, which `./bin/start-public` publishes.
 
-The server keeps the address for its lifetime and looks it up again once after a connection failure.
+The MCP server and the hook use the same lookup. The MCP server keeps the address for its lifetime and looks it up again once after a connection failure.
 
 ## Tools
 
