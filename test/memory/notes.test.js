@@ -408,16 +408,9 @@ describe('memory notes API', function () {
       assert.deepStrictEqual(sent, [['ack', 2]])
     })
 
-    it('keeps both of two appends whose reads interleave', async function () {
+    it('keeps both of two concurrent appends', async function () {
       const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
       const live = openInEditor(row)
-      // Hold both lookups so each request reads the document before either writes.
-      const findOne = Note.findOne
-      const held = []
-      Note.findOne = options => new Promise(resolve => {
-        held.push(() => findOne(options).then(resolve))
-        if (held.length === 2) held.forEach(release => release())
-      })
 
       const [first, second] = await Promise.all([
         call('POST', '/api/memory/notes/' + id + '/append', { text: 'one' }),

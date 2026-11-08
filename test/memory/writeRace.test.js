@@ -5,11 +5,12 @@ const assert = require('assert')
 const http = require('http')
 const express = require('express')
 const mock = require('mock-require')
+const sinon = require('sinon')
 
 const { createFakeLogger } = require('../testDoubles/loggerFake')
 const { createApiTokenModelFake } = require('../testDoubles/apiTokenModelFake')
 const { createNoteModelFake } = require('../testDoubles/noteModelFake')
-const { removeLibModuleCache } = require('../realtime/utils')
+const { removeLibModuleCache, makeMockSocket } = require('../realtime/utils')
 const realtimeJobStub = require('../testDoubles/realtimeJobStub')
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms))
@@ -21,18 +22,21 @@ describe('concurrent memory API writes', function () {
   let realtime
   let server
   let token
+  let dbDelay
 
   beforeEach(function (done) {
     removeLibModuleCache()
+    dbDelay = () => 1 + Math.random() * 5
     Note = createNoteModelFake()
     const findOne = Note.findOne
     Note.findOne = async options => {
       const note = await findOne(options)
-      await delay(1 + Math.random() * 5)
+      await delay(dbDelay())
       if (!note) return note
+      if (options.include) return Object.assign(note, { authors: [] })
       const update = note.update
       note.update = async function (values) {
-        await delay(1 + Math.random() * 5)
+        await delay(dbDelay())
         return update.call(this, values)
       }
       return note
@@ -45,7 +49,7 @@ describe('concurrent memory API writes', function () {
       Note,
       User: { getProfile: user => user },
       Author: {},
-      Revision: { saveNoteRevisionAsync: async () => ({}) }
+      Revision: { saveNoteRevisionAsync: () => delay(dbDelay()) }
     })
     mock('../../lib/realtime/realtimeUpdateDirtyNoteJob', realtimeJobStub)
     mock('../../lib/realtime/realtimeCleanDanglingUserJob', realtimeJobStub)
@@ -65,6 +69,7 @@ describe('concurrent memory API writes', function () {
   afterEach(function (done) {
     realtime.terminate()
     mock.stopAll()
+    sinon.restore()
     removeLibModuleCache()
     server.close(done)
   })
@@ -152,5 +157,72 @@ describe('concurrent memory API writes', function () {
 
     assert.deepStrictEqual(res, { status: 400, body: { status: 'error', message: 'Note is too long' } })
     assert.strictEqual(row.content, grown)
+  })
+
+  describe('write admission', function () {
+    function connectBrowsers () {
+      realtime.maintenance = false
+      const connected = new Map()
+      sinon.stub(realtime, 'parseNoteIdFromSocketAsync').callsFake(async socket => socket.testNoteId)
+      sinon.stub(realtime, 'checkViewPermission').returns(true)
+      sinon.stub(realtime, 'updateHistory')
+      sinon.stub(realtime, 'emitOnlineUsers')
+      sinon.stub(realtime, 'emitRefresh').callsFake(socket => connected.get(socket)())
+      return noteId => new Promise(resolve => {
+        const socket = makeMockSocket()
+        socket.join = sinon.fake()
+        socket.request.user = { logged_in: true, id: 'user-1' }
+        socket.testNoteId = noteId
+        connected.set(socket, resolve)
+        realtime.connection(socket)
+      })
+    }
+
+    it('connects a browser to one note within about one write while many writes to another note wait', async function () {
+      const DB_MS = 20
+      dbDelay = () => DB_MS
+      const busy = seed(memory)
+      const other = seed('# other\n')
+      const connect = connectBrowsers()
+
+      const writes = Array.from({ length: 30 }, (_, i) =>
+        call('PUT', `/api/memory/notes/${busy.id}`, { content: memory + 'x'.repeat(1000) + i }))
+      await delay(DB_MS * 3)
+      const busyConnected = connect(busy.row.id)
+      await delay(5)
+      const started = Date.now()
+      await connect(other.row.id)
+      const waited = Date.now() - started
+      await busyConnected
+      await Promise.all(writes)
+
+      console.log(`      connect to the other note took ${waited} ms (one database call takes ${DB_MS} ms)`)
+      assert(waited < DB_MS * 8, `waited ${waited} ms`)
+    })
+
+    it('admits one write per user plus five queued and answers 429 to the rest', async function () {
+      const { id } = seed(memory)
+      let release
+      const gate = new Promise(resolve => { release = resolve })
+      dbDelay = () => 1
+      const findRow = Note.findOne
+      Note.findOne = async options => {
+        const note = await findRow(options)
+        if (note && !options.include) await gate
+        return note
+      }
+
+      const results = []
+      const pending = Array.from({ length: 10 }, (_, i) =>
+        call('POST', `/api/memory/notes/${id}/append`, { text: 'LINE' + i }).then(res => results.push(res)))
+      for (let i = 0; i < 200 && results.length < 4; i++) await delay(5)
+      const rejected = results.slice()
+      release()
+      await Promise.all(pending)
+
+      assert.deepStrictEqual(rejected.map(res => res.status), [429, 429, 429, 429])
+      assert.deepStrictEqual(rejected[0].body, { status: 'error', message: 'Too many concurrent writes' })
+      assert.strictEqual(results.filter(res => res.status === 200).length, 6)
+    })
   })
 })
