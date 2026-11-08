@@ -1,7 +1,7 @@
 # 04: 全域 MCP server
 
 **Blocked by:** 02
-**Status:** ready
+**Status:** in-progress
 
 ## Build
 
