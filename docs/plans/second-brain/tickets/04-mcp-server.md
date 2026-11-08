@@ -1,7 +1,7 @@
 # 04: 全域 MCP server
 
 **Blocked by:** 02
-**Status:** in-progress
+**Status:** done
 
 ## Build
 
@@ -11,7 +11,7 @@
 
 - [x] 無依賴的 Node client：先連 localhost:3000，連不上再從 GitHub Pages 查出 tunnel 網址；token 從權限 600 的設定檔讀取
 - [x] MCP 透過 stdio 提供 memory_index、memory_search、memory_read、memory_create、memory_update、memory_append、memory_archive
-- [ ] 以 user scope 註冊；只有讀取類工具放進允許清單
+- [x] 以 user scope 註冊；只有讀取類工具放進允許清單
 - [x] 兩個網址都連不上時，工具回傳清楚的錯誤
 
 ## Proof
