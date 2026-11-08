@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="<%= getLocale() %>">
+
+<head>
+    <%- include('codimd/head') %>
+</head>
+
+<body>
+    <div class="container" id="api-token-page" style="max-width: 800px; padding-top: 30px;"
+        data-server-url="<%= serverURL %>"
+        data-csrf-token="<%= csrfToken %>"
+        data-never-used="<%= __('Never') %>"
+        data-confirm-revoke="<%= __('Revoke this token? Agents using it will stop working.') %>"
+        data-revoke-label="<%= __('Revoke') %>"
+        data-request-failed="<%= __('Request failed. Please try again.') %>">
+        <p><a href="<%= serverURL %>/"><i class="fa fa-arrow-left"></i> CodiMD</a></p>
+        <h2><%= __('API token') %></h2>
+        <p class="text-muted"><%= __('An API token lets an agent read and write your memory notes. It cannot reach your other notes.') %></p>
+
+        <form id="api-token-create" class="form-inline" style="margin: 20px 0;">
+            <div class="form-group">
+                <label class="sr-only" for="api-token-name"><%= __('Token name') %></label>
+                <input type="text" class="form-control" id="api-token-name" maxlength="100" required placeholder="<%= __('Token name') %>">
+            </div>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> <%= __('Create token') %></button>
+        </form>
+
+        <div id="api-token-error" class="alert alert-danger" style="display: none;"></div>
+
+        <div id="api-token-created" class="alert alert-success" style="display: none;">
+            <p><strong><%= __('Copy this token now. It will not be shown again.') %></strong></p>
+            <input type="text" class="form-control" id="api-token-value" readonly>
+        </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th><%= __('Name') %></th>
+                    <th><%= __('Prefix') %></th>
+                    <th><%= __('Created') %></th>
+                    <th><%= __('Last used') %></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="api-token-list">
+                <% tokens.forEach(function (token) { %>
+                <tr data-id="<%= token.id %>">
+                    <td><%= token.name %></td>
+                    <td><code><%= token.prefix %>…</code></td>
+                    <td><time datetime="<%= new Date(token.createdAt).toISOString() %>"></time></td>
+                    <td><% if (token.lastUsedAt) { %><time datetime="<%= new Date(token.lastUsedAt).toISOString() %>"></time><% } else { %><%= __('Never') %><% } %></td>
+                    <td><button type="button" class="btn btn-xs btn-danger api-token-revoke"><%= __('Revoke') %></button></td>
+                </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    <script src="<%= serverURL %>/js/api-token.js"></script>
+</body>
+
+</html>

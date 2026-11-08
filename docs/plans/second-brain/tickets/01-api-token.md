@@ -1,7 +1,7 @@
 # 01: API token 產生、撤銷與 Bearer 認證
 
 **Blocked by:** None
-**Status:** ready
+**Status:** in-progress
 
 ## Build
 

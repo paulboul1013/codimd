@@ -139,6 +139,8 @@ app.use('/docs', express.static(path.resolve(__dirname, config.docsPath), { maxA
 app.use('/uploads', express.static(path.resolve(__dirname, config.uploadsPath), { maxAge: config.staticCacheTime }))
 app.use('/default.md', express.static(path.resolve(__dirname, config.defaultNotePath), { maxAge: config.staticCacheTime }))
 app.use(require('./lib/metrics').router)
+// Bearer-only API: mounted before the session so token calls never create or read a session
+app.use('/api/memory', require('./lib/memory/router'))
 
 // session
 app.use(session({

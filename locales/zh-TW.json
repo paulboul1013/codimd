@@ -186,5 +186,18 @@
 	"Unable to load your notes. Please try again.": "無法載入你的筆記，請再試一次。",
 	"Delete note": "刪除筆記",
 	"Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.": "要刪除這篇筆記嗎？內容與版本歷史會對所有人刪除，無法復原。",
-	"Unable to delete the note. Please try again.": "無法刪除筆記，請再試一次。"
+	"Unable to delete the note. Please try again.": "無法刪除筆記，請再試一次。",
+	"API token": "API token",
+	"An API token lets an agent read and write your memory notes. It cannot reach your other notes.": "API token 讓 agent 讀寫你的記憶筆記，碰不到你的其他筆記。",
+	"Token name": "Token 名稱",
+	"Create token": "產生 token",
+	"Copy this token now. It will not be shown again.": "請現在複製這組 token，之後不會再顯示。",
+	"Name": "名稱",
+	"Prefix": "前綴",
+	"Created": "建立時間",
+	"Last used": "最後使用時間",
+	"Never": "從未使用",
+	"Revoke": "撤銷",
+	"Revoke this token? Agents using it will stop working.": "要撤銷這組 token 嗎？使用它的 agent 會無法再連線。",
+	"Request failed. Please try again.": "請求失敗，請再試一次。"
 }

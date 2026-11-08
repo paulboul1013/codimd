@@ -186,5 +186,18 @@
 	"Unable to load your notes. Please try again.": "Unable to load your notes. Please try again.",
 	"Delete note": "Delete note",
 	"Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.": "Delete this note? Its content and revision history will be deleted for everyone. This cannot be undone.",
-	"Unable to delete the note. Please try again.": "Unable to delete the note. Please try again."
+	"Unable to delete the note. Please try again.": "Unable to delete the note. Please try again.",
+	"API token": "API token",
+	"An API token lets an agent read and write your memory notes. It cannot reach your other notes.": "An API token lets an agent read and write your memory notes. It cannot reach your other notes.",
+	"Token name": "Token name",
+	"Create token": "Create token",
+	"Copy this token now. It will not be shown again.": "Copy this token now. It will not be shown again.",
+	"Name": "Name",
+	"Prefix": "Prefix",
+	"Created": "Created",
+	"Last used": "Last used",
+	"Never": "Never",
+	"Revoke": "Revoke",
+	"Revoke this token? Agents using it will stop working.": "Revoke this token? Agents using it will stop working.",
+	"Request failed. Please try again.": "Request failed. Please try again."
 }
