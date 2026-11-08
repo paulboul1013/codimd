@@ -1,7 +1,7 @@
 # 03: 筆記開著時透過即時協作寫入
 
 **Blocked by:** 02
-**Status:** ready
+**Status:** done
 
 ## Build
 
@@ -9,10 +9,10 @@
 
 ## Acceptance
 
-- [ ] 筆記在 pool 中時，寫入會以 text operation 套用到目前 revision 並廣播
-- [ ] 瀏覽器中其他人尚未存檔的編輯不會被覆蓋
-- [ ] 筆記被標為 dirty，之後由既有的工作存回資料庫
-- [ ] 筆記不在 pool 中時，仍然走 02 的資料庫路徑
+- [x] 筆記在 pool 中時，寫入會以 text operation 套用到目前 revision 並廣播
+- [x] 瀏覽器中其他人尚未存檔的編輯不會被覆蓋
+- [x] 筆記被標為 dirty，之後由既有的工作存回資料庫
+- [x] 筆記不在 pool 中時，仍然走 02 的資料庫路徑
 
 ## Proof
 
