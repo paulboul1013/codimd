@@ -1,7 +1,7 @@
 # 06: 匯入本機 memory
 
 **Blocked by:** 04
-**Status:** ready
+**Status:** done
 
 ## Build
 
@@ -9,10 +9,10 @@
 
 ## Acceptance
 
-- [ ] 讀取各記憶檔的 frontmatter（name、description、type）和內文
-- [ ] user 類型歸 global 範圍，其他類型歸所屬專案範圍
-- [ ] 重跑不會重複建立（依 name 比對）
-- [ ] 支援 --dry-run，列出將要建立的筆記
+- [x] 讀取各記憶檔的 frontmatter（name、description、type）和內文
+- [x] user 類型歸 global 範圍，其他類型歸所屬專案範圍
+- [x] 重跑不會重複建立（依 name 比對）
+- [x] 支援 --dry-run，列出將要建立的筆記
 
 ## Proof
 

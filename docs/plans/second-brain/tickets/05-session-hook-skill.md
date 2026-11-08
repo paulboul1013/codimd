@@ -1,7 +1,7 @@
 # 05: SessionStart 記憶索引、skill 與關閉本機 memory
 
 **Blocked by:** 04
-**Status:** ready
+**Status:** done
 
 ## Build
 
@@ -9,10 +9,10 @@
 
 ## Acceptance
 
-- [ ] hook 依 git remote 的 repo 名稱決定專案，印出記憶索引
-- [ ] CodiMD 連不上時只印一行提示，hook 以狀態 0 結束
-- [ ] skill 說明記憶範圍、記憶類型、什麼時候提議寫入、封存而不刪除
-- [ ] 全域設定 autoMemoryEnabled 為 false
+- [x] hook 依 git remote 的 repo 名稱決定專案，印出記憶索引
+- [x] CodiMD 連不上時只印一行提示，hook 以狀態 0 結束
+- [x] skill 說明記憶範圍、記憶類型、什麼時候提議寫入、封存而不刪除
+- [x] 全域設定 autoMemoryEnabled 為 false
 
 ## Proof
 
