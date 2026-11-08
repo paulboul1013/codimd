@@ -73,6 +73,7 @@ function createNoteModelFake () {
     encodeNoteId: real.encodeNoteId,
     decodeNoteId: real.decodeNoteId,
     checkNoteIdValid: real.checkNoteIdValid,
+    updateAuthorshipByOperation: real.updateAuthorshipByOperation,
     findAll: async options => {
       calls.findAll.push(options)
       return rows.filter(row => matches(row, options.where)).map(toInstance)

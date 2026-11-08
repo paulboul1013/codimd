@@ -16,7 +16,8 @@ const NOT_FOUND = { status: 'error', message: 'Not found' }
 describe('memory notes API', function () {
   let Note
   let revisions
-  let openNoteIds
+  let pool
+  let emitted
   let config
   let server
   let token
@@ -28,7 +29,8 @@ describe('memory notes API', function () {
     const ApiToken = createApiTokenModelFake()
     Note = createNoteModelFake()
     revisions = []
-    openNoteIds = new Set()
+    pool = {}
+    emitted = []
     mock('../../lib/models', {
       ApiToken,
       Note,
@@ -39,7 +41,10 @@ describe('memory notes API', function () {
         }
       }
     })
-    mock('../../lib/realtime/realtime', { isNoteExistsInPool: id => openNoteIds.has(id) })
+    mock('../../lib/realtime/realtime', {
+      getNoteFromNotePool: id => pool[id],
+      io: { to: room => ({ emit: (...args) => emitted.push({ room, args }) }) }
+    })
     config = require('../../lib/config')
     const apiToken = require('../../lib/memory/apiToken')
     Promise.all(['user-1', 'user-2'].map(async userId => {
@@ -334,27 +339,180 @@ describe('memory notes API', function () {
   })
 
   describe('a note open in the editor', function () {
-    for (const [method, suffix, body] of [
-      ['PUT', '', { content: '---\ntags: memory, global, user\n---\n# changed\n' }],
-      ['POST', '/append', { text: 'more' }],
-      ['POST', '/archive', undefined]
-    ]) {
-      it(`answers ${method} ${suffix || '/'} with 409 and writes nothing`, async function () {
-        const { row, id } = seed({ content: memory('memory, global, user') })
-        openNoteIds.add(row.id)
-        const before = row.content
-        const res = await call(method, '/api/memory/notes/' + id + suffix, body)
-        assert.strictEqual(res.status, 409)
-        assert.deepStrictEqual(res.body, { status: 'error', message: 'Note is open in the editor' })
-        assert.strictEqual(row.content, before)
-        assert.strictEqual(revisions.length, 0)
-      })
+    let EditorSocketIOServer
+
+    beforeEach(function () {
+      EditorSocketIOServer = require('../../lib/ot/editor-socketio-server')
+    })
+
+    // The pool entry realtime keeps for an open note; `document` holds unsaved browser edits.
+    function openInEditor (row, document = row.content) {
+      pool[row.id] = {
+        id: row.id,
+        server: new EditorSocketIOServer(document, [], row.id),
+        tempUsers: {},
+        authorship: [],
+        lastchangeuser: null
+      }
+      return pool[row.id]
     }
 
-    it('still allows reading it', async function () {
+    function browserSocket (id) {
+      const sent = []
+      const socket = {
+        id,
+        emit: (...args) => sent.push(args),
+        broadcast: { in: () => ({ emit: () => {} }) }
+      }
+      return { socket, sent }
+    }
+
+    it('appends to the live document, keeping unsaved browser edits, and broadcasts one operation', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
+      const saved = row.content
+      const typed = memory('memory, global, user', '\n# T\n\nbody typed in the browser')
+      const live = openInEditor(row, typed)
+
+      const res = await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
+
+      assert.strictEqual(res.status, 200)
+      const expected = typed + '\n\nmore'
+      assert.strictEqual(res.body.note.content, expected)
+      assert.strictEqual(live.server.document, expected)
+      assert.strictEqual(live.server.operations.length, 1)
+      assert.deepStrictEqual(emitted, [{
+        room: row.id,
+        args: ['operation', 'memory-api', 1, [typed.length, '\n\nmore'], null]
+      }])
+      assert.strictEqual(live.server.isDirty, true)
+      assert.strictEqual(live.lastchangeuser, 'user-1')
+      assert(live.tempUsers['user-1'])
+      assert.deepStrictEqual(live.authorship.map(a => a.slice(0, 3)), [['user-1', typed.length, expected.length]])
+      assert.strictEqual(row.content, saved, 'the dirty-note job saves it, not the API')
+      assert.strictEqual(revisions.length, 0, 'the save-revision job records it, not the API')
+      assert.strictEqual(Note.calls.update.length, 0)
+    })
+
+    it('transforms a browser operation sent against the revision before the API write', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
+      const live = openInEditor(row)
+      const { socket, sent } = browserSocket('browser-1')
+
+      await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
+      // The browser typed " text" after "body" before it saw the API operation.
+      const at = row.content.length
+      live.server.onOperation(socket, 0, [at, ' text'], null)
+
+      assert.strictEqual(live.server.document, row.content + ' text\n\nmore')
+      assert.deepStrictEqual(sent, [['ack', 2]])
+    })
+
+    it('keeps both of two appends whose reads interleave', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
+      const live = openInEditor(row)
+      // Hold both lookups so each request reads the document before either writes.
+      const findOne = Note.findOne
+      const held = []
+      Note.findOne = options => new Promise(resolve => {
+        held.push(() => findOne(options).then(resolve))
+        if (held.length === 2) held.forEach(release => release())
+      })
+
+      const [first, second] = await Promise.all([
+        call('POST', '/api/memory/notes/' + id + '/append', { text: 'one' }),
+        call('POST', '/api/memory/notes/' + id + '/append', { text: 'two' })
+      ])
+
+      assert.strictEqual(first.status, 200)
+      assert.strictEqual(second.status, 200)
+      assert(live.server.document.includes('\n\none'), live.server.document)
+      assert(live.server.document.includes('\n\ntwo'), live.server.document)
+      assert.deepStrictEqual(emitted.map(e => e.args[2]), [1, 2])
+    })
+
+    it('replaces the live document on PUT', async function () {
       const { row, id } = seed({ content: memory('memory, global, user') })
-      openNoteIds.add(row.id)
-      assert.strictEqual((await call('GET', '/api/memory/notes/' + id)).status, 200)
+      const live = openInEditor(row, memory('memory, global, user', '\n# Typed\n'))
+      const content = memory('memory, global, user', '\n# New title\n\nnew body\n')
+
+      const res = await call('PUT', '/api/memory/notes/' + id, { content })
+
+      assert.strictEqual(res.status, 200)
+      assert.strictEqual(res.body.note.title, 'New title')
+      assert.strictEqual(live.server.document, content)
+      assert.strictEqual(emitted.length, 1)
+      assert.strictEqual(live.server.isDirty, true)
+      assert.strictEqual(Note.calls.update.length, 0)
+    })
+
+    it('archives the live document', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user') })
+      const typed = memory('memory, global, user', '\n# Title\n\nbody and more\n')
+      const live = openInEditor(row, typed)
+
+      const res = await call('POST', '/api/memory/notes/' + id + '/archive')
+
+      assert.strictEqual(res.status, 200)
+      assert.strictEqual(res.body.note.archived, true)
+      assert.strictEqual(live.server.document, memory('memory, global, user, archived', '\n# Title\n\nbody and more\n'))
+    })
+
+    it('reads the live document', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user') })
+      const typed = memory('memory, global, user', '\n# Typed title\n')
+      openInEditor(row, typed)
+      const res = await call('GET', '/api/memory/notes/' + id)
+      assert.strictEqual(res.status, 200)
+      assert.strictEqual(res.body.note.content, typed)
+    })
+
+    it('answers 404 once the browser removed the memory tag', async function () {
+      const { row, id } = seed({ content: memory('memory, global, user') })
+      const live = openInEditor(row, '# no longer a memory\n')
+      const res = await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
+      assert.deepStrictEqual(res.body, NOT_FOUND)
+      assert.strictEqual(live.server.document, '# no longer a memory\n')
+      assert.strictEqual(emitted.length, 0)
+    })
+
+    describe('when a browser opens the note during a database write', function () {
+      function openDuringUpdate (row, document) {
+        const findOne = Note.findOne
+        Note.findOne = async options => {
+          const instance = await findOne(options)
+          const update = instance.update
+          instance.update = async function (values) {
+            openInEditor(row, document)
+            return update.call(this, values)
+          }
+          return instance
+        }
+      }
+
+      it('brings an editor that loaded the old row forward', async function () {
+        const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
+        const before = row.content
+        openDuringUpdate(row, before)
+
+        const res = await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
+
+        assert.strictEqual(res.status, 200)
+        assert.strictEqual(row.content, before + '\n\nmore')
+        assert.strictEqual(pool[row.id].server.document, before + '\n\nmore')
+        assert.strictEqual(emitted.length, 1)
+        assert.strictEqual(revisions.length, 1)
+      })
+
+      it('leaves an editor alone once someone typed in it', async function () {
+        const { row, id } = seed({ content: memory('memory, global, user', '\n# T\n\nbody') })
+        const typed = row.content + ' typed'
+        openDuringUpdate(row, typed)
+
+        await call('POST', '/api/memory/notes/' + id + '/append', { text: 'more' })
+
+        assert.strictEqual(pool[row.id].server.document, typed)
+        assert.strictEqual(emitted.length, 0)
+      })
     })
   })
 })
