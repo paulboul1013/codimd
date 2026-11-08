@@ -451,6 +451,18 @@ describe('memory notes API', function () {
       assert.strictEqual(live.server.document, memory('memory, global, user, archived', '\n# Title\n\nbody and more\n'))
     })
 
+    it('searches and filters by the live document', async function () {
+      const { row } = seed({ title: 'open', content: memory('memory, global, user') })
+      openInEditor(row, memory('memory, global, user', '\n# open\n\nfreshly typed words\n'))
+      const archived = seed({ title: 'archived live', content: memory('memory, global, user') }).row
+      openInEditor(archived, memory('memory, global, user, archived'))
+
+      const search = await call('GET', '/api/memory/notes?q=freshly%20typed')
+      assert.deepStrictEqual(search.body.notes.map(note => note.title), ['open'])
+      const listed = await call('GET', '/api/memory/notes')
+      assert.deepStrictEqual(listed.body.notes.map(note => note.title), ['open'])
+    })
+
     it('reads the live document', async function () {
       const { row, id } = seed({ content: memory('memory, global, user') })
       const typed = memory('memory, global, user', '\n# Typed title\n')
