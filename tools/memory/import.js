@@ -130,7 +130,12 @@ function titleFor (memory) {
   return text.length > TITLE_MAX ? text.slice(0, TITLE_MAX - 3).trimEnd() + '...' : text
 }
 
-function markerFor (name) {
+function markerFor (scope, name) {
+  return `<!-- imported-from: ${scope}/${name} -->`
+}
+
+// Notes imported before the marker named the scope.
+function legacyMarkerFor (name) {
   return `<!-- imported-from: ${name} -->`
 }
 
@@ -148,13 +153,14 @@ function collectMemories (root, home) {
       const memory = parseMemoryFile(fs.readFileSync(path.join(memoryDir, file), 'utf8'), path.basename(file, '.md'))
       const type = IMPORT_TYPES.includes(memory.type) ? memory.type : FALLBACK_TYPE
       if (type !== 'user' && !projectScopeCache) projectScopeCache = projectScopeFor(projectDir, home)
+      const scope = type === 'user' ? 'global' : projectScopeCache
       memories.push({
         name: memory.name,
-        scope: type === 'user' ? 'global' : projectScopeCache,
+        scope,
         type,
         originalType: memory.type,
         title: titleFor(memory),
-        body: `${memory.body}\n\n${markerFor(memory.name)}`
+        body: `${memory.body}\n\n${markerFor(scope, memory.name)}`
       })
     }
   }
@@ -162,15 +168,19 @@ function collectMemories (root, home) {
 }
 
 // The search is a case-insensitive substring match, so confirm the exact marker.
-async function alreadyImported (client, name) {
-  const marker = markerFor(name)
+async function hasNoteWith (client, marker, accept) {
   const query = new URLSearchParams({ q: marker, includeArchived: 'true' })
   const { notes } = await client.request('GET', `/notes?${query}`)
   for (const summary of notes) {
     const { note } = await client.request('GET', `/notes/${encodeURIComponent(summary.id)}`)
-    if (note.content.includes(marker)) return true
+    if (note.content.includes(marker) && accept(note)) return true
   }
   return false
+}
+
+async function alreadyImported (client, memory) {
+  return await hasNoteWith(client, markerFor(memory.scope, memory.name), () => true) ||
+    hasNoteWith(client, legacyMarkerFor(memory.name), note => note.scope === memory.scope)
 }
 
 function parseArgs (argv) {
@@ -198,7 +208,7 @@ async function run ({ argv = process.argv.slice(2), env = process.env, home = os
 
   if (options.dryRun) log(`Dry run: nothing is written.${options.offline ? ' Offline: existing notes are not checked.' : ''}`)
   for (const memory of memories) {
-    const exists = client ? await alreadyImported(client, memory.name) : false
+    const exists = client ? await alreadyImported(client, memory) : false
     if (exists) {
       skipped++
     } else {

@@ -188,9 +188,9 @@ describe('memory import: command', function () {
     const output = await runImport([], env)
     const created = api.notes.map(({ title, scope, type, tags, body }) => ({ title, scope, type, tags, body }))
     assert.deepStrictEqual(created.sort((a, b) => a.body < b.body ? -1 : 1), [
-      { title: 'me', scope: 'global', type: 'user', tags: ['imported'], body: 'About me.\n\n<!-- imported-from: me -->' },
-      { title: 'Roughly match Python', scope: 'project:tai_ci', type: 'feedback', tags: ['imported'], body: 'Body of parity.\n\n<!-- imported-from: parity -->' },
-      { title: 'odd', scope: 'project:tai_ci', type: 'reference', tags: ['imported'], body: 'Odd body.\n\n<!-- imported-from: odd -->' }
+      { title: 'me', scope: 'global', type: 'user', tags: ['imported'], body: 'About me.\n\n<!-- imported-from: global/me -->' },
+      { title: 'Roughly match Python', scope: 'project:tai_ci', type: 'feedback', tags: ['imported'], body: 'Body of parity.\n\n<!-- imported-from: project:tai_ci/parity -->' },
+      { title: 'odd', scope: 'project:tai_ci', type: 'reference', tags: ['imported'], body: 'Odd body.\n\n<!-- imported-from: project:tai_ci/odd -->' }
     ])
     assert.ok(api.requests.every(request => request.auth === 'Bearer test-token'))
     assert.match(output, /^create +project:tai_ci +feedback +parity$/m)
@@ -206,13 +206,31 @@ describe('memory import: command', function () {
     assert.match(output, /^skip +global +user +me$/m)
     assert.match(output, /created 0, skipped 3/)
     const searches = api.requests.filter(request => request.method === 'GET' && request.path === '/api/memory/notes')
-    assert.deepStrictEqual(searches.find(request => request.query.q.includes('parity')).query, { q: '<!-- imported-from: parity -->', includeArchived: 'true' })
+    assert.deepStrictEqual(searches.find(request => request.query.q.includes('parity')).query, { q: '<!-- imported-from: project:tai_ci/parity -->', includeArchived: 'true' })
   })
 
   it('creates the note when a search hit lacks the exact, case-sensitive marker', async function () {
     api.notes.push({ id: 'x', content: 'text\n<!-- IMPORTED-FROM: PARITY -->\n' })
     await runImport([], env)
-    assert.strictEqual(api.notes.filter(note => note.body && note.body.includes('imported-from: parity')).length, 1)
+    assert.strictEqual(api.notes.filter(note => note.body && note.body.includes('/parity -->')).length, 1)
+  })
+
+  it('imports same-named memories of two projects once each', async function () {
+    memoryFile(path.join(home, 'zenc'), 'parity.md', '---\nname: parity\ntype: feedback\n---\nZenc parity.\n')
+    await runImport([], env)
+    const output = await runImport([], env)
+    const parity = api.notes.filter(note => note.body && note.body.includes('/parity -->'))
+    assert.deepStrictEqual(parity.map(note => note.scope).sort(), ['project:tai_ci', 'project:zenc'])
+    assert.match(output, /created 0, skipped 4/)
+  })
+
+  it('treats a note with the old name-only marker in the same scope as imported', async function () {
+    api.notes.push({ id: 'old', scope: 'project:tai_ci', content: 'Body of parity.\n\n<!-- imported-from: parity -->\n' })
+    api.notes.push({ id: 'other', scope: 'project:zenc', content: 'Other odd.\n\n<!-- imported-from: odd -->\n' })
+    const output = await runImport([], env)
+    assert.match(output, /^skip +project:tai_ci +feedback +parity$/m)
+    assert.match(output, /^create +project:tai_ci +reference +odd\b/m)
+    assert.match(output, /created 2, skipped 1/)
   })
 
   it('lists what it would do with --dry-run and sends no POST', async function () {

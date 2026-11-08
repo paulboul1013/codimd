@@ -102,5 +102,5 @@ node tools/memory/import.js                       # create the notes
 - Each file becomes one note with the file's type and the tag `imported`. A type other than `user`, `feedback`, `project`, or `reference` becomes `reference`.
 - `user` memories go to `global`. Other memories go to the scope of their project: the git repo the project directory points to, or the directory name when it is not a repo.
 - `MEMORY.md` index files and project directories under `/tmp` are skipped.
-- The note body ends with `<!-- imported-from: <name> -->`. A rerun skips each file whose marker is already in a note, archived notes included.
+- The note body ends with `<!-- imported-from: <scope>/<name> -->`. A rerun skips each file whose marker is already in a note, archived notes included. A note with the older `<!-- imported-from: <name> -->` marker counts too when its scope matches.
 - `--root <dir>` reads another projects directory.
