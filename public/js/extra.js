@@ -26,6 +26,7 @@ import {
 import { renderFretBoard } from './lib/renderer/fretboard/fretboard'
 import './lib/renderer/lightbox'
 import { renderCSVPreview } from './lib/renderer/csvpreview'
+import { stopLinksAtFullWidthPunctuation } from './lib/markdown/linkify-cjk'
 
 import { escapeAttrValue } from './render'
 import { sanitizeUrl, isPdfUrl } from './utils'
@@ -1241,6 +1242,7 @@ export const md = markdownit('default', {
   highlight: highlightRender
 })
 window.md = md
+stopLinksAtFullWidthPunctuation(md.linkify)
 
 md.use(require('markdown-it-abbr'))
 md.use(require('markdown-it-footnote'))
